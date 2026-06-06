@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,3 +15,5 @@ Route::get('/test-koneksi', function () {
         'message' => 'Backend Laravel siap melayani Frontend React TypeScript. HAHAHA',
     ]);
 });
+
+Route::post('/login', [AuthController::class, 'login']);
