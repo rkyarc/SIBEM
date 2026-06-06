@@ -1,24 +1,21 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
+import type { ReactNode } from "react";
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
 
-const MainLayout = () => {
+interface MainLayoutProps {
+  children: ReactNode;
+  activeMenu: string;
+  setActiveMenu: (menu: string) => void;
+}
+
+export default function MainLayout({ children, activeMenu, setActiveMenu }: MainLayoutProps) {
   return (
-    <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
-      {/* Sidebar tetap di kiri */}
-      <Sidebar />
-      
-      {/* Area konten utama */}
-      <div className="flex-1 flex flex-col w-full">
+    <div className="flex h-screen w-full bg-[#FAFBFC] font-sans overflow-hidden">
+      <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+      <main className="flex-1 flex flex-col h-full overflow-y-auto px-10 py-8">
         <Navbar />
-        
-        {/* Tempat halaman (Dashboard/Proker) akan dirender (Outlet) */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-          <Outlet />
-        </main>
-      </div>
+        {children}
+      </main>
     </div>
   );
-};
-
-export default MainLayout;
+}
