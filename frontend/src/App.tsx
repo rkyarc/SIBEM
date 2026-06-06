@@ -2,6 +2,7 @@ import { useState } from "react";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Proker from "./pages/Proker";
+import Login from "./pages/Login";
 
 export default function App() {
   const [activeMenu, setActiveMenu] = useState("Overview"); // Default menu sesuai desain
@@ -17,16 +18,20 @@ export default function App() {
           <div className="bg-white p-10 rounded-[40px] shadow-sm flex items-center justify-center h-96 border border-gray-100">
             <div className="text-center">
               <p className="text-gray-400 mb-2">Halaman sedang dikembangkan</p>
-              <h2 className="text-2xl font-bold text-gray-700">{activeMenu} SIBEM</h2>
+              <h2 className="text-2xl font-bold text-gray-700">
+                {activeMenu} SIBEM
+              </h2>
             </div>
           </div>
         );
     }
   };
 
-  return (
-    <MainLayout activeMenu={activeMenu} setActiveMenu={setActiveMenu}>
+  const isAuthenticated = !!localStorage.getItem("token");
+
+  return isAuthenticated ? <MainLayout activeMenu={activeMenu} setActiveMenu={setActiveMenu}>
       {renderContent()}
-    </MainLayout>
-  );
+    </MainLayout> : <Login />;
+
+ 
 }

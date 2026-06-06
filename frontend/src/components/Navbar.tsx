@@ -7,6 +7,11 @@ interface NavbarProps {
 
 export default function Navbar({ onMenuClick }: NavbarProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  window.location.href = "/login"; // Kembali ke login
+};
 
   return (
     <header className="flex justify-between items-center mb-6 md:mb-8">
@@ -58,7 +63,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
               <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profil Saya</button>
               <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pengaturan</button>
               <hr className="my-1 border-gray-100" />
-              <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Keluar</button>
+              <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Keluar</button>
             </div>
           )}
         </div>
