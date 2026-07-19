@@ -164,7 +164,7 @@ export default function Laporan() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Judul dan tombol aksi */}
       <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -176,20 +176,20 @@ export default function Laporan() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
           >
-            <Printer size={17} />
+            <Printer size={16} />
             Cetak Laporan
           </button>
 
           <button
             type="button"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto"
           >
-            <FileDown size={17} />
+            <FileDown size={16} />
             Export PDF
           </button>
         </div>
@@ -203,9 +203,9 @@ export default function Laporan() {
           return (
             <article
               key={item.label}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-gray-500">
                     {item.label}
@@ -228,8 +228,8 @@ export default function Laporan() {
       </section>
 
       {/* Filter */}
-      <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[220px_240px_1fr]">
+      <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-[220px_240px_1fr]">
           <div className="relative">
             <CalendarDays
               size={17}
@@ -238,7 +238,7 @@ export default function Laporan() {
             <select
               aria-label="Pilih periode laporan"
               defaultValue=""
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             >
               <option value="">Semua Periode</option>
               <option value="januari">Januari 2026</option>
@@ -254,7 +254,7 @@ export default function Laporan() {
           <select
             aria-label="Pilih kategori laporan"
             defaultValue=""
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
           >
             <option value="">Semua Kategori</option>
             <option value="kegiatan">Kegiatan</option>
@@ -271,7 +271,7 @@ export default function Laporan() {
             <input
               type="search"
               placeholder="Cari kegiatan atau kementerian..."
-              className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function Laporan() {
 
       {/* Tabel laporan */}
       <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <div className="flex flex-col gap-1 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-bold text-gray-800">Daftar Laporan Kegiatan</h2>
             <p className="mt-0.5 text-xs text-gray-400">
@@ -295,26 +295,26 @@ export default function Laporan() {
           <table className="w-full min-w-[1050px] text-left">
             <thead className="border-b border-gray-100 bg-gray-50/80">
               <tr>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   No
                 </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Nama Kegiatan
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Kegiatan
                 </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Kementerian
-                </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   Tanggal
                 </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   Status KAK
                 </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   Anggaran
                 </th>
-                <th className="px-5 py-3.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
                   Status Laporan
+                </th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Aksi
                 </th>
               </tr>
             </thead>
@@ -325,34 +325,31 @@ export default function Laporan() {
                   key={laporan.id}
                   className="transition hover:bg-orange-50/30"
                 >
-                  <td className="px-5 py-4 text-sm font-medium text-gray-500">
-                    {String(index + 1).padStart(2, "0")}
+                  <td className="px-4 py-3 text-sm font-medium text-gray-500">
+                    {index + 1}
                   </td>
-
-                  <td className="px-5 py-4">
-                    <p className="max-w-[260px] text-sm font-semibold text-gray-800">
+                  <td className="px-4 py-3">
+                    <p className="text-sm font-semibold text-gray-800">
                       {laporan.namaKegiatan}
                     </p>
+                    <p className="text-xs text-gray-500">
+                      {laporan.kementerian}
+                    </p>
                   </td>
-
-                  <td className="px-5 py-4 text-sm text-gray-600">
-                    {laporan.kementerian}
-                  </td>
-
-                  <td className="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
+                  <td className="px-4 py-3 text-sm text-gray-600">
                     {formatTanggal(laporan.tanggal)}
                   </td>
-
-                  <td className="px-5 py-4">
+                  <td className="px-4 py-3">
                     <StatusBadge status={laporan.statusKak} />
                   </td>
-
-                  <td className="whitespace-nowrap px-5 py-4 text-sm font-semibold text-gray-700">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-700">
                     {formatRupiah(laporan.anggaran)}
                   </td>
-
-                  <td className="px-5 py-4">
+                  <td className="px-4 py-3">
                     <StatusBadge status={laporan.statusLaporan} />
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button className="text-orange-600 hover:text-orange-700 text-xs font-medium">Detail</button>
                   </td>
                 </tr>
               ))}
@@ -360,7 +357,7 @@ export default function Laporan() {
           </table>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-gray-400">
             Data laporan dikelola secara manual pada komponen.
           </p>

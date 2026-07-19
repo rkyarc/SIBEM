@@ -200,7 +200,7 @@ const Anggaran = () => {
   const isPresbem = userRole === "presbem";
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-4 relative">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
@@ -219,20 +219,20 @@ const Anggaran = () => {
       </div>
 
       {/* Ringkasan Anggaran (Pagu Dana) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
             <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pemasukan</h3>
             <p className="text-2xl font-bold text-green-600">
                {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
             </p>
          </div>
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50">
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
             <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pengeluaran (Disetujui)</h3>
             <p className="text-2xl font-bold text-red-500">
                {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
             </p>
          </div>
-         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50">
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
             <h3 className="text-gray-500 text-sm font-medium mb-1">Menunggu Validasi</h3>
             <p className="text-2xl font-bold text-yellow-600">
                {daftarAnggaran.filter(a => a.status === 'pending' || a.status === 'verifikasi_sekjen').length} Pengajuan
@@ -245,14 +245,14 @@ const Anggaran = () => {
           <table className="w-full min-w-[1000px] text-left">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="p-4 text-sm font-semibold text-gray-600">No.</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Kegiatan</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Divisi</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Jenis</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Nominal</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Tanggal</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">Status</th>
-                <th className="p-4 text-sm font-semibold text-gray-600 text-center">Aksi</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">No.</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Kegiatan</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Divisi</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Jenis</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Nominal</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Tanggal</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600">Status</th>
+                <th className="px-4 py-2 text-sm font-semibold text-gray-600 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -268,22 +268,22 @@ const Anggaran = () => {
               ) : daftarAnggaran.length > 0 ? (
                 daftarAnggaran.map((anggaran, i) => (
                   <tr key={anggaran.id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="p-4 text-sm text-gray-700 font-medium">{i + 1}</td>
-                    <td className="p-4 text-sm text-gray-800 font-medium">{anggaran.nama_kegiatan}</td>
-                    <td className="p-4 text-sm text-gray-600">{anggaran.divisi}</td>
-                    <td className="p-4 text-sm">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${anggaran.jenis === 'pemasukan' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                    <td className="px-4 py-2 text-sm text-gray-700 font-medium">{i + 1}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800 font-medium">{anggaran.nama_kegiatan}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{anggaran.divisi}</td>
+                    <td className="px-4 py-2 text-sm">
+                      <span className={`px-2 py-1 rounded text-[11px] font-semibold ${anggaran.jenis === 'pemasukan' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                          {anggaran.jenis.toUpperCase()}
                       </span>
                     </td>
-                    <td className="p-4 text-sm font-bold text-gray-800">{formatRupiah(anggaran.jumlah)}</td>
-                    <td className="p-4 text-sm text-gray-600">{formatTanggal(anggaran.tanggal)}</td>
-                    <td className="p-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(anggaran.status)}`}>
+                    <td className="px-4 py-2 text-sm font-bold text-gray-800">{formatRupiah(anggaran.jumlah)}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{formatTanggal(anggaran.tanggal)}</td>
+                    <td className="px-4 py-2">
+                      <span className={`px-2 py-0.5 rounded-md text-[11px] font-medium ${getStatusColor(anggaran.status)}`}>
                         {anggaran.status.replace("_", " ").toUpperCase()}
                       </span>
                     </td>
-                    <td className="p-4 flex justify-center gap-2">
+                    <td className="px-4 py-2 flex justify-center gap-2">
                       {/* Tombol Approval Berjenjang */}
                       {(isSekjen && anggaran.status === 'pending') && (
                           <button 

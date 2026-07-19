@@ -131,7 +131,7 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto p-4 sm:p-8 pt-8">
         
         {/* ================= HEADER MODERN DENGAN LOGO ================= */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 bg-white p-8 rounded-[30px] shadow-sm border border-slate-100 gap-6 lg:gap-0 relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 bg-white p-6 rounded-[24px] shadow-sm border border-slate-100 gap-4 lg:gap-0 relative overflow-hidden">
           
           {/* Dekorasi Background Abstrak (Opsional untuk estetika) */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-50 to-orange-50 rounded-full blur-3xl -z-10 transform translate-x-20 -translate-y-20 opacity-60"></div>
@@ -155,9 +155,9 @@ export default function AdminDashboard() {
           <div className="flex gap-3 w-full lg:w-auto z-10">
             <button 
               onClick={openModal}
-              className="flex-1 lg:flex-none justify-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2"
+              className="flex-1 lg:flex-none justify-center bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2 text-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
               </svg>
               Tambah Pengurus
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
             
             <button 
               onClick={handleLogout}
-              className="justify-center bg-white hover:bg-red-50 text-red-600 px-6 py-3.5 rounded-xl font-bold transition-colors border border-red-100 hover:border-red-200 flex items-center gap-2"
+              className="justify-center bg-white hover:bg-red-50 text-red-600 px-5 py-2.5 rounded-xl font-bold transition-colors border border-red-100 hover:border-red-200 flex items-center gap-2 text-sm"
             >
               Logout
             </button>
@@ -173,8 +173,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* ================= TABEL DAFTAR AKUN ================= */}
-        <div className="bg-white rounded-[30px] shadow-sm border border-slate-100 overflow-hidden">
-          <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-sm">
+        <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden">
+          <div className="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-sm">
             <h2 className="text-xl font-bold text-slate-800">Daftar Pengurus Terdaftar</h2>
             <div className="bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full text-sm font-bold border border-orange-100">
               Total: {users.length} Akun
@@ -184,11 +184,11 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 text-slate-500 text-sm">
-                  <th className="p-5 font-bold border-b border-slate-100 w-16 text-center">No</th>
-                  <th className="p-5 font-bold border-b border-slate-100">Nama Lengkap</th>
-                  <th className="p-5 font-bold border-b border-slate-100">Alamat Email</th>
-                  <th className="p-5 font-bold border-b border-slate-100">Jabatan / Divisi</th>
+                <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider">
+                  <th className="px-5 py-4 font-bold border-b border-slate-100 w-16 text-center">No</th>
+                  <th className="px-5 py-4 font-bold border-b border-slate-100">Nama Lengkap</th>
+                  <th className="px-5 py-4 font-bold border-b border-slate-100">Alamat Email</th>
+                  <th className="px-5 py-4 font-bold border-b border-slate-100">Jabatan / Divisi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -203,11 +203,11 @@ export default function AdminDashboard() {
                 ) : (
                   users.map((user, index) => (
                     <tr key={user.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="p-5 text-slate-400 font-medium text-center">{index + 1}</td>
-                      <td className="p-5 font-bold text-slate-700 group-hover:text-orange-600 transition-colors">{user.name}</td>
-                      <td className="p-5 text-slate-500 font-medium">{user.email}</td>
-                      <td className="p-5">
-                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold border ${getRoleBadgeStyle(user.role)}`}>
+                      <td className="px-5 py-3.5 text-slate-400 font-medium text-center text-sm">{index + 1}</td>
+                      <td className="px-5 py-3.5 font-bold text-slate-700 group-hover:text-orange-600 transition-colors text-sm">{user.name}</td>
+                      <td className="px-5 py-3.5 text-slate-500 font-medium text-sm">{user.email}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold border ${getRoleBadgeStyle(user.role)}`}>
                           {user.role}
                         </span>
                       </td>

@@ -225,8 +225,8 @@ const Proker = () => {
   );
 
   return (
-    <div className="space-y-6 relative">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 relative">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
             Manajemen Program Kerja
@@ -238,7 +238,7 @@ const Proker = () => {
         {isMenteri && (
           <button
             onClick={handleAddClick}
-            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium w-full sm:w-auto"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium w-full sm:w-auto text-sm"
           >
             + Tambah Proker
           </button>
@@ -250,21 +250,21 @@ const Proker = () => {
           <table className="w-full min-w-[800px] text-left">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="p-4 text-sm font-semibold text-gray-600">No.</th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
+                <th className="px-4 py-2.5 text-sm font-semibold text-gray-600">No.</th>
+                <th className="px-4 py-2.5 text-sm font-semibold text-gray-600">
                   Nama Kegiatan
                 </th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
+                <th className="px-4 py-2.5 text-sm font-semibold text-gray-600">
                   Kementerian
                 </th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
+                <th className="px-4 py-2.5 text-sm font-semibold text-gray-600">
                   Tanggal
                 </th>
-                <th className="p-4 text-sm font-semibold text-gray-600">
+                <th className="px-4 py-2.5 text-sm font-semibold text-gray-600">
                   Status
                 </th>
                 {hasActionColumn && (
-                  <th className="p-4 text-sm font-semibold text-gray-600 text-center">
+                  <th className="px-4 py-2.5 text-sm font-semibold text-gray-600 text-center">
                     Aksi
                   </th>
                 )}
@@ -287,31 +287,31 @@ const Proker = () => {
                     className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer"
                     onClick={(e) => handleRowClick(kegiatan, e)}
                   >
-                    <td className="p-4 text-sm text-gray-700 font-medium">
+                    <td className="px-4 py-2 text-sm text-gray-700 font-medium">
                       {i + 1}
                     </td>
-                    <td className="p-4 text-sm text-gray-800">
+                    <td className="px-4 py-2 text-sm text-gray-800">
                       {kegiatan.nama_proker}
                     </td>
-                    <td className="p-4 text-sm text-gray-600">
+                    <td className="px-4 py-2 text-sm text-gray-600">
                       {kegiatan.divisi}
                     </td>
-                    <td className="p-4 text-sm text-gray-600">
+                    <td className="px-4 py-2 text-sm text-gray-600">
                       {formatTanggal(kegiatan.tanggal_pelaksanaan)}
                     </td>
-                    <td className="p-4">
+                    <td className="px-4 py-2">
                       { (isBPH || kegiatan.divisi === userDivisi) ? (
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(kegiatan.status)}`}
+                          className={`px-2 py-1 rounded-md text-[11px] font-medium ${getStatusColor(kegiatan.status)}`}
                         >
                           {formatStatusText(kegiatan.status)}
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-xs italic">Tersembunyi</span>
+                        <span className="text-gray-400 text-[11px] italic">Tersembunyi</span>
                       )}
                     </td>
                     {hasActionColumn && (
-                    <td className="p-4 flex justify-center gap-2">
+                    <td className="px-4 py-2 flex justify-center gap-2">
                       {isPresbem && kegiatan.status === 'pending' && (
                         <>
                           <button 

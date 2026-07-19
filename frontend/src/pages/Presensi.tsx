@@ -237,7 +237,7 @@ export default function Presensi() {
     <div className="p-4 sm:p-8 font-sans text-gray-800">
       
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             {viewMode === "aktif" ? "Presensi Berlangsung" : "Riwayat Presensi"}
@@ -254,7 +254,7 @@ export default function Presensi() {
                 setViewMode(viewMode === "aktif" ? "riwayat" : "aktif");
                 setSelectedHistorySesi(null); 
               }} 
-              className="flex-1 sm:flex-none bg-white text-gray-700 hover:bg-gray-50 px-5 py-2.5 rounded-lg font-bold border border-gray-200 transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap"
+              className="flex-1 sm:flex-none bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-bold border border-gray-200 transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap"
             >
               {viewMode === "aktif" ? (
                 <><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Lihat Riwayat</>
@@ -265,7 +265,7 @@ export default function Presensi() {
           )}
 
           {isBPH && viewMode === "aktif" && (
-            <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
+            <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
               Buat Presensi
             </button>
           )}
@@ -275,16 +275,16 @@ export default function Presensi() {
       {/* ================= PAGE RENDERER ================= */}
       {viewMode === "riwayat" && selectedHistorySesi ? (
         // ----------------- TAMPILAN DETAIL PAGE RIWAYAT -----------------
-        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-5 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <button 
             onClick={() => setSelectedHistorySesi(null)}
-            className="text-sm font-bold text-gray-400 hover:text-orange-600 mb-6 flex items-center gap-2 transition-colors"
+            className="text-xs font-bold text-gray-400 hover:text-orange-600 mb-4 flex items-center gap-2 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
             Kembali ke Daftar Riwayat
           </button>
           
-          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-6">
+          <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-4">
             <div>
               <h2 className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-1.5">Hasil Rekapitulasi Kehadiran</h2>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">{selectedHistorySesi.nama_kegiatan}</h1>
@@ -298,8 +298,7 @@ export default function Presensi() {
               </button>
             )}
           </div>
-
-          <div className="space-y-3">
+          <div className="space-y-2">
             {isLoadingPeserta ? (
               <div className="text-center py-12 text-gray-400 font-medium">Memuat data anggota...</div>
             ) : daftarPeserta.length === 0 ? (
@@ -347,7 +346,7 @@ export default function Presensi() {
             {viewMode === "aktif" ? "Tidak ada sesi presensi yang sedang berlangsung." : "Belum ada riwayat presensi yang tersimpan."}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredSesi.map((sesi) => {
               const isExpired = isSessionExpired(sesi);
 
@@ -356,12 +355,12 @@ export default function Presensi() {
                   <div key={sesi.id} className="relative group animate-in zoom-in-95 duration-300">
                     <div 
                       onClick={() => openHistoryDetail(sesi)} 
-                      className="cursor-pointer bg-white border border-gray-100 rounded-[24px] shadow-sm hover:border-orange-300 hover:shadow-md p-5 flex flex-col transition-all opacity-95 h-full"
+                      className="cursor-pointer bg-white border border-gray-100 rounded-[20px] shadow-sm hover:border-orange-300 hover:shadow-md p-4 flex flex-col transition-all opacity-95 h-full"
                     >
-                      <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-[20px] text-[10px] font-bold bg-gray-100 text-gray-500 tracking-wider">SELESAI</div>
-                      <h3 className="text-lg font-extrabold text-gray-900 mb-1 group-hover:text-orange-700 transition-colors pr-12 leading-tight">{sesi.nama_kegiatan}</h3>
-                      <p className="text-sm font-semibold text-gray-500 mb-6">{sesi.tingkatan} {sesi.kementerian ? `(${sesi.kementerian})` : ""}</p>
-                      <div className="mt-auto flex items-center text-gray-400 text-xs font-bold uppercase tracking-wider bg-gray-50 w-fit px-3 py-1.5 rounded-lg border border-gray-100">
+                      <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-[16px] text-[10px] font-bold bg-gray-100 text-gray-500 tracking-wider">SELESAI</div>
+                      <h3 className="text-base font-extrabold text-gray-900 mb-1 group-hover:text-orange-700 transition-colors pr-10 leading-tight">{sesi.nama_kegiatan}</h3>
+                      <p className="text-xs font-semibold text-gray-500 mb-4">{sesi.tingkatan} {sesi.kementerian ? `(${sesi.kementerian})` : ""}</p>
+                      <div className="mt-auto flex items-center text-gray-400 text-[10px] font-bold uppercase tracking-wider bg-gray-50 w-fit px-2.5 py-1 rounded-lg border border-gray-100">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
                         {sesi.tanggal}
                       </div>
@@ -381,11 +380,11 @@ export default function Presensi() {
               }
 
               return (
-                <div key={sesi.id} className="bg-white border border-gray-100 rounded-[24px] shadow-sm hover:shadow-md p-5 flex flex-col relative overflow-hidden animate-in zoom-in-95 duration-300">
-                  <div className="absolute top-0 right-0 px-4 py-1.5 rounded-bl-[20px] text-[10px] font-bold bg-green-100 text-green-700 tracking-wider">AKTIF</div>
-                  <div className="pr-16 mb-4">
-                    <h3 className="text-lg font-extrabold text-gray-900 leading-tight">{sesi.nama_kegiatan}</h3>
-                    <p className="text-sm font-semibold text-gray-500 mt-1">{sesi.tingkatan} {sesi.kementerian ? `(${sesi.kementerian})` : ""}</p>
+                <div key={sesi.id} className="bg-white border border-gray-100 rounded-[20px] shadow-sm hover:shadow-md p-4 flex flex-col relative overflow-hidden animate-in zoom-in-95 duration-300">
+                  <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-[16px] text-[10px] font-bold bg-green-100 text-green-700 tracking-wider">AKTIF</div>
+                  <div className="pr-12 mb-3">
+                    <h3 className="text-base font-extrabold text-gray-900 leading-tight">{sesi.nama_kegiatan}</h3>
+                    <p className="text-xs font-semibold text-gray-500 mt-1">{sesi.tingkatan} {sesi.kementerian ? `(${sesi.kementerian})` : ""}</p>
                   </div>
 
                   <div className="space-y-4 mb-6 flex-1">

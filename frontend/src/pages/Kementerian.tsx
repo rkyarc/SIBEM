@@ -126,7 +126,7 @@ export default function Kementerian() {
     <div className="p-4 sm:p-8 font-sans text-gray-800">
       
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Kementerian</h1>
           <p className="text-gray-500 text-sm mt-1 font-medium">Kelola data kementerian dan struktur organisasi SIBEM.</p>
@@ -134,7 +134,7 @@ export default function Kementerian() {
       </div>
 
       {/* ================= STATISTIK DINAMIS (3 Kolom Sejajar) ================= */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-5 mb-8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5">
         <Card 
           cardIndex={0}
           title="Total Kementerian" 
@@ -171,35 +171,35 @@ export default function Kementerian() {
       </div>
 
       {/* ================= SEARCH & FILTER ================= */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
           <input
             type="text"
             placeholder="Cari kementerian..."
-            className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-600 transition-all shadow-sm"
+            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-600 transition-all shadow-sm"
           />
         </div>
       </div>
 
       {/* ================= DAFTAR KEMENTERIAN ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {isLoadingStats ? (
-          <div className="col-span-2 text-center py-12 text-gray-400 font-medium">Memuat struktur kementerian...</div>
+          <div className="col-span-2 text-center py-8 text-gray-400 font-medium">Memuat struktur kementerian...</div>
         ) : kementerianList.length === 0 ? (
-          <div className="col-span-2 text-center py-12 text-gray-400 font-medium">Belum ada data kementerian. Pastikan ada user yang didaftarkan.</div>
+          <div className="col-span-2 text-center py-8 text-gray-400 font-medium">Belum ada data kementerian. Pastikan ada user yang didaftarkan.</div>
         ) : (
           kementerianList.map((item) => (
             <div
               key={item.id}
-              className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:border-orange-100 group"
+              className="rounded-2xl bg-white p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:border-orange-100 group"
             >
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="flex items-center gap-3 mb-1.5">
-                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-lg font-bold text-gray-900 group-hover:text-orange-700 transition-colors">
                       {item.nama}
                     </h2>
                     <span className="px-2.5 py-1 rounded-md text-xs font-bold border bg-green-50 text-green-700 border-green-200/60">
@@ -216,27 +216,27 @@ export default function Kementerian() {
 
                 <button 
                   onClick={() => openDetailModal(item)}
-                  className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all active:scale-95 flex items-center gap-2"
+                  className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all active:scale-95 flex items-center gap-1.5"
                 >
                   Detail
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                   </svg>
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-50">
+              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-gray-50">
                 <div className="flex flex-col justify-between">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pengurus</p>
-                  <p className="text-gray-900 font-bold text-lg">{item.staffCount} <span className="text-gray-400 font-medium text-xs">Orang</span></p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Total Pengurus</p>
+                  <p className="text-gray-900 font-bold text-base">{item.staffCount} <span className="text-gray-400 font-medium text-[10px]">Orang</span></p>
                 </div>
                 <div className="flex flex-col justify-between">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Proker</p>
-                  <p className="text-gray-900 font-bold text-lg">{item.prokerCount}</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Proker</p>
+                  <p className="text-gray-900 font-bold text-base">{item.prokerCount}</p>
                 </div>
                 <div className="flex flex-col justify-between">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Anggaran</p>
-                  <p className="text-gray-900 font-bold text-lg">{item.anggaran}</p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Anggaran</p>
+                  <p className="text-gray-900 font-bold text-base">{item.anggaran}</p>
                 </div>
               </div>
             </div>
