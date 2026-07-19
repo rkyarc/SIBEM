@@ -136,6 +136,7 @@ export default function Kementerian() {
       {/* ================= STATISTIK DINAMIS (3 Kolom Sejajar) ================= */}
       <div className="grid grid-cols-3 gap-3 sm:gap-5 mb-8">
         <Card 
+          cardIndex={0}
           title="Total Kementerian" 
           value={isLoadingStats ? "..." : stats.totalKementerian.toString()} 
           color="blue"
@@ -146,6 +147,7 @@ export default function Kementerian() {
           } 
         />
         <Card 
+          cardIndex={1}
           title="Total Pengurus" 
           value={isLoadingStats ? "..." : stats.totalStaff.toString()} 
           color="orange"
@@ -156,6 +158,7 @@ export default function Kementerian() {
           } 
         />
         <Card 
+          cardIndex={2}
           title="Total Program Kerja" 
           value={isLoadingStats ? "..." : stats.totalProker.toString()} 
           color="green"
@@ -223,15 +226,15 @@ export default function Kementerian() {
               </div>
 
               <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-50">
-                <div>
+                <div className="flex flex-col justify-between">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pengurus</p>
                   <p className="text-gray-900 font-bold text-lg">{item.staffCount} <span className="text-gray-400 font-medium text-xs">Orang</span></p>
                 </div>
-                <div>
+                <div className="flex flex-col justify-between">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Proker</p>
                   <p className="text-gray-900 font-bold text-lg">{item.prokerCount}</p>
                 </div>
-                <div>
+                <div className="flex flex-col justify-between">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Anggaran</p>
                   <p className="text-gray-900 font-bold text-lg">{item.anggaran}</p>
                 </div>
@@ -321,33 +324,71 @@ function Card({
   value,
   icon,
   color,
+  cardIndex,
 }: {
   title: string;
   value: string;
   icon: React.ReactNode;
   color: "blue" | "orange" | "green";
+  cardIndex: number;
 }) {
   const colorStyles = {
     blue: "bg-orange-50 text-orange-600 border-orange-100",
     orange: "bg-orange-50 text-orange-600 border-orange-100",
     green: "bg-green-50 text-green-600 border-green-100",
   };
+  
+  const iconColors = {
+    blue: "text-blue-500",
+    orange: "text-orange-500",
+    green: "text-green-500",
+  };
 
   const bgDecorationColor = colorStyles[color].split(" ")[0];
+  
+  // Watermark styling based on index (to alternate top-left and bottom-right like overview)
+  let watermarkClass = "absolute -right-4 -bottom-4 rotate-[-15deg]";
+  if (cardIndex === 1) {
+    watermarkClass = "absolute -left-4 -top-4 rotate-[15deg]";
+  } else if (cardIndex === 2) {
+    watermarkClass = "absolute -right-4 -bottom-4 rotate-[-12deg]";
+  }
+
+  const formatTitleMobile = (text: string) => {
+    const parts = text.split(" ");
+    if (parts.length > 1) {
+      return (
+        <>
+          {parts[0]}<br /> {parts.slice(1).join(" ")}
+        </>
+      );
+    }
+    return text;
+  };
 
   return (
-    <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-white p-4 sm:p-6 shadow-sm border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1 group cursor-default">
+    <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-white shadow-sm border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1 group cursor-default p-4 sm:p-6 h-32 md:h-auto flex flex-col md:flex-row items-center md:items-center justify-center md:justify-start text-center md:text-left">
       
-      <div className={`absolute -right-6 -top-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full opacity-50 transition-transform group-hover:scale-[1.8] duration-700 ease-out ${bgDecorationColor}`}></div>
+      {/* MOBILE WATERMARK (Overview Style) */}
+      <div className={`md:hidden ${watermarkClass} w-24 h-24 ${iconColors[color]} opacity-[0.07] pointer-events-none [&>svg]:w-full [&>svg]:h-full`}>
+        {icon}
+      </div>
+
+      {/* DESKTOP BACKGROUND DECORATION (Original Style) */}
+      <div className={`hidden md:block absolute -right-6 -top-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full opacity-50 transition-transform group-hover:scale-[1.8] duration-700 ease-out ${bgDecorationColor}`}></div>
       
-      <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
-        <div className={`flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${colorStyles[color]} shadow-sm shrink-0`}>
+      <div className="relative flex flex-col md:flex-row items-center md:items-center gap-3 sm:gap-5 z-10 w-full md:w-auto">
+        {/* DESKTOP BOXED ICON (Original Style) */}
+        <div className={`hidden md:flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${colorStyles[color]} shadow-sm shrink-0`}>
           {icon}
         </div>
         
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">{value}</h2>
-          <p className="text-xs sm:text-sm font-semibold text-gray-500 mt-0.5 sm:mt-1">{title}</p>
+          <h2 className="text-4xl md:text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight leading-none md:leading-normal mb-1 md:mb-0">{value}</h2>
+          <p className="text-xs sm:text-sm font-semibold text-gray-500 mt-0.5 sm:mt-1">
+             <span className="md:hidden">{formatTitleMobile(title)}</span>
+             <span className="hidden md:inline">{title}</span>
+          </p>
         </div>
       </div>
     </div>
