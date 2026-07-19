@@ -34,6 +34,7 @@ const Anggaran = () => {
     tanggal: "",
     keterangan: "",
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchAnggarans();
@@ -63,6 +64,7 @@ const Anggaran = () => {
       tanggal: "",
       keterangan: "",
     });
+    setSelectedFile(null);
     setIsEditMode(false);
     setEditId(null);
     setIsModalOpen(true);
@@ -77,6 +79,7 @@ const Anggaran = () => {
       tanggal: anggaran.tanggal || "",
       keterangan: anggaran.keterangan || "",
     });
+    setSelectedFile(null);
     setIsEditMode(true);
     setEditId(anggaran.id);
     setIsModalOpen(true);
@@ -88,20 +91,30 @@ const Anggaran = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const payload = {
-        ...formData,
-        jumlah: parseFloat(formData.jumlah)
-      };
+      
+      const payload = new FormData();
+      payload.append("nama_kegiatan", formData.nama_kegiatan);
+      payload.append("divisi", formData.divisi);
+      payload.append("jenis", formData.jenis);
+      payload.append("jumlah", formData.jumlah);
+      payload.append("tanggal", formData.tanggal);
+      if (formData.keterangan) payload.append("keterangan", formData.keterangan);
+      
+      if (selectedFile) {
+        payload.append("bukti_file", selectedFile);
+      }
 
       if (isEditMode && editId !== null) {
-        await axios.put(
+        // Laravel uses _method for PUT/PATCH with FormData
+        payload.append("_method", "PUT");
+        await axios.post(
           `http://127.0.0.1:8000/api/anggaran/${editId}`,
           payload,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
         );
       } else {
         await axios.post("http://127.0.0.1:8000/api/anggaran", payload, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
       }
 
@@ -305,6 +318,18 @@ const Anggaran = () => {
                           </button>
                       )}
 
+                      {anggaran.bukti_file && (
+                          <a 
+                             href={anggaran.bukti_file}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-blue-600 hover:text-blue-800 text-xs font-bold px-2 py-1 rounded-md border border-blue-200 bg-blue-50 hover:bg-blue-100 transition"
+                             title="Lihat Kuitansi"
+                          >
+                             Lihat Kuitansi
+                          </a>
+                      )}
+
                       {/* Tolak bisa dilakukan oleh Sekjen (saat pending) atau Presbem (saat verif) */}
                       {((isSekjen && anggaran.status === 'pending') || (isPresbem && anggaran.status === 'verifikasi_sekjen')) && (
                           <button 
@@ -381,6 +406,18 @@ const Anggaran = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Keterangan / Rincian</label>
                 <textarea rows={2} className="w-full p-2 border border-gray-300 rounded-lg" value={formData.keterangan} onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })} />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Unggah Kuitansi / Nota</label>
+                <input 
+                  type="file" 
+                  accept="image/*,application/pdf" 
+                  capture="environment" 
+                  className="w-full p-2 border border-gray-300 rounded-lg text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                  onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                />
+                <p className="text-xs text-gray-400 mt-1">Dapat difoto langsung menggunakan HP.</p>
               </div>
 
               <div className="flex justify-end gap-3 mt-6 pt-2">

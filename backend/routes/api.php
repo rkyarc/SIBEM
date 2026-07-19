@@ -40,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/anggaran/{id}', [\App\Http\Controllers\AnggaranController::class, 'update']);
     Route::delete('/anggaran/{id}', [\App\Http\Controllers\AnggaranController::class, 'destroy']);
 
+    // Rute untuk Laporan
+    Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index']);
+
     Route::get('/sesi-presensi/{id}/peserta', [KehadiranController::class, 'getPeserta']);
     Route::post('/sesi-presensi/{id}/peserta', [KehadiranController::class, 'simpanKehadiran']);
 

@@ -23,9 +23,17 @@ class AnggaranController extends Controller
             'jumlah' => 'required|numeric',
             'tanggal' => 'required|date',
             'keterangan' => 'nullable|string',
+            'bukti_file' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120', // Max 5MB
         ]);
 
-        $anggaran = Anggaran::create($request->all());
+        $data = $request->all();
+        
+        if ($request->hasFile('bukti_file')) {
+            $path = $request->file('bukti_file')->store('kuitansi', 'public');
+            $data['bukti_file'] = url('storage/' . $path);
+        }
+
+        $anggaran = Anggaran::create($data);
 
         return response()->json([
             'message' => 'Anggaran berhasil diajukan!', 
@@ -41,7 +49,14 @@ class AnggaranController extends Controller
             return response()->json(['message' => 'Anggaran tidak ditemukan'], 404);
         }
 
-        $anggaran->update($request->all());
+        $data = $request->all();
+        
+        if ($request->hasFile('bukti_file')) {
+            $path = $request->file('bukti_file')->store('kuitansi', 'public');
+            $data['bukti_file'] = url('storage/' . $path);
+        }
+
+        $anggaran->update($data);
 
         return response()->json([
             'message' => 'Anggaran berhasil diperbarui!',
