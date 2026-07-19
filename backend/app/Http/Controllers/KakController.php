@@ -29,7 +29,9 @@ class KakController extends Controller
             'tipe_pengajuan' => 'required|string',
         ]);
 
-        $kak = Kak::create($request->all());
+        $data = $request->all();
+        $data['user_id'] = auth()->id();
+        $kak = Kak::create($data);
 
         return response()->json([
             'message' => 'Pengajuan berhasil ditambahkan!', 

@@ -3,6 +3,7 @@ import axios from "axios";
 
 interface KAKData {
   id: number;
+  user_id?: number;
   nama_kegiatan: string;
   divisi: string;
   link_drive: string | null;
@@ -271,7 +272,7 @@ const PengajuanKAK = () => {
   });
 
   return (
-    <div className="space-y-6 relative pb-10">
+    <div className="space-y-4 relative pb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -288,13 +289,13 @@ const PengajuanKAK = () => {
           <div className="flex gap-2 w-full md:w-auto">
             <button
               onClick={() => handleAddClick('kak')}
-              className="flex-1 md:flex-none bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium"
+              className="flex-1 md:flex-none bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium text-sm"
             >
               + Ajukan KAK
             </button>
             <button
               onClick={() => handleAddClick('lpj')}
-              className="flex-1 md:flex-none bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition shadow-sm font-medium"
+              className="flex-1 md:flex-none bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition shadow-sm font-medium text-sm"
             >
               + Ajukan LPJ
             </button>
@@ -306,13 +307,13 @@ const PengajuanKAK = () => {
       <div className="flex border-b border-gray-200">
         <button
           onClick={() => setActiveTab('kak')}
-          className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'kak' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+          className={`py-2 px-5 font-medium text-sm border-b-2 transition-colors ${activeTab === 'kak' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
         >
           Daftar Pengajuan KAK
         </button>
         <button
           onClick={() => setActiveTab('lpj')}
-          className={`py-3 px-6 font-medium text-sm border-b-2 transition-colors ${activeTab === 'lpj' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+          className={`py-2 px-5 font-medium text-sm border-b-2 transition-colors ${activeTab === 'lpj' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
         >
           Daftar Pengajuan LPJ
         </button>
@@ -325,7 +326,7 @@ const PengajuanKAK = () => {
           <p>Memuat data pengajuan...</p>
         </div>
       ) : filteredData.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredData.map((item) => {
             const isRevisi = item.status.toLowerCase().startsWith('revisi');
             const isOwnRevisi = isRevisi && (isMenteri || isStaff);
@@ -334,7 +335,7 @@ const PengajuanKAK = () => {
               <div 
                 key={item.id} 
                 onClick={() => handleDetailClick(item)}
-                className={`rounded-xl shadow-sm border p-5 transition cursor-pointer flex flex-col h-full relative overflow-hidden ${
+                className={`rounded-xl shadow-sm border p-4 transition cursor-pointer flex flex-col h-full relative overflow-hidden ${
                   isOwnRevisi 
                     ? 'bg-orange-50 border-orange-400 hover:shadow-md' 
                     : 'bg-white border-gray-100 hover:shadow-md hover:border-orange-200'
@@ -344,17 +345,17 @@ const PengajuanKAK = () => {
                   <div className="absolute top-0 right-0 w-full h-1 bg-orange-500"></div>
                 )}
                 
-                <div className="flex justify-between items-start mb-3">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${item.tipe_pengajuan === 'lpj' ? 'bg-indigo-100 text-indigo-700' : 'bg-orange-100 text-orange-700'}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.tipe_pengajuan === 'lpj' ? 'bg-indigo-100 text-indigo-700' : 'bg-orange-100 text-orange-700'}`}>
                     {item.tipe_pengajuan?.toUpperCase() || 'KAK'}
                   </span>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium text-center ${getStatusColor(item.status)}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium text-center ${getStatusColor(item.status)}`}>
                     {formatStatusText(item.status)}
                   </span>
                 </div>
                 
-                <h3 className="text-lg font-bold text-gray-800 line-clamp-2 mb-1">{item.nama_kegiatan}</h3>
-                <p className="text-sm font-medium text-gray-500 mb-4">{item.divisi}</p>
+                <h3 className="text-base font-bold text-gray-800 line-clamp-2 mb-1">{item.nama_kegiatan}</h3>
+                <p className="text-xs font-medium text-gray-500 mb-3">{item.divisi}</p>
                 
                 {isOwnRevisi && (
                   <div className="mb-4 bg-orange-100 text-orange-800 text-xs px-3 py-2 rounded-lg border border-orange-200 font-medium flex items-center gap-2">
@@ -363,9 +364,9 @@ const PengajuanKAK = () => {
                   </div>
                 )}
 
-                <div className="mt-auto pt-4 border-t border-gray-100/50 flex justify-between items-center">
-                  <span className={`text-xs ${isOwnRevisi ? 'text-orange-600 font-medium' : 'text-gray-400'}`}>Klik untuk melihat detail</span>
-                  <svg className={`w-5 h-5 ${isOwnRevisi ? 'text-orange-400' : 'text-gray-300'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                <div className="mt-auto pt-3 border-t border-gray-100/50 flex justify-between items-center">
+                  <span className={`text-[11px] ${isOwnRevisi ? 'text-orange-600 font-medium' : 'text-gray-400'}`}>Klik untuk melihat detail</span>
+                  <svg className={`w-4 h-4 ${isOwnRevisi ? 'text-orange-400' : 'text-gray-300'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 </div>
               </div>
             );
@@ -528,7 +529,7 @@ const PengajuanKAK = () => {
             )}
 
             {/* AKSI KHUSUS PENGIRIM (Menteri/Staff) */}
-            {(isMenteri || isStaff) && selectedPengajuan.divisi === userDivisi && (
+            {(isMenteri || isStaff) && selectedPengajuan.user_id === user?.id && (
               <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => {

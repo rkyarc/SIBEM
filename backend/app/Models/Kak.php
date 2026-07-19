@@ -10,6 +10,7 @@ class Kak extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'nama_kegiatan',
         'divisi',
         'link_drive',
