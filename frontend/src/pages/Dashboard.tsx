@@ -340,7 +340,7 @@ export default function Dashboard() {
 
           {/* Tabel Kegiatan Terbaru */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-50">
-            <h3 className="font-bold text-gray-800 mb-3">Kegiatan Terbaru (Proker)</h3>
+            <h3 className="font-bold text-gray-800 mb-3">Kegiatan Terbaru</h3>
             {kegiatanTerbaru.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[500px] text-sm text-left">
@@ -426,7 +426,7 @@ export default function Dashboard() {
 
           {/* Progress Kegiatan */}
           <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-50">
-            <h3 className="font-bold text-gray-800 mb-3 text-sm">Progress Kegiatan</h3>
+            <h3 className="font-bold text-gray-800 mb-3 text-sm">Progres Kegiatan</h3>
             {progressKegiatan.length > 0 ? (
               <div className="space-y-3">
                 {progressKegiatan.map((item) => (

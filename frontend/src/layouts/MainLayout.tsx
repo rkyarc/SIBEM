@@ -15,20 +15,22 @@ export default function MainLayout({ children, activeMenu, setActiveMenu }: Main
   return (
     <div className="flex h-screen w-full bg-[#F3F4F6] overflow-hidden">
       {/* 3. TERUSKAN PAKETNYA: Kirim activeMenu ke Sidebar */}
-      <Sidebar 
-        activeMenu={activeMenu} 
-        setActiveMenu={setActiveMenu}
-        isMobileOpen={isMobileMenuOpen}
-        setIsMobileOpen={setIsMobileMenuOpen}
-      />
+      <div className="print:hidden">
+        <Sidebar 
+          activeMenu={activeMenu} 
+          setActiveMenu={setActiveMenu}
+          isMobileOpen={isMobileMenuOpen}
+          setIsMobileOpen={setIsMobileMenuOpen}
+        />
+      </div>
 
       {/* Area Kanan */}
-      <div className="flex flex-1 flex-col overflow-hidden w-full relative">
-        <div className="p-4 md:p-8 pb-0">
+      <div className="flex flex-1 flex-col overflow-hidden w-full relative print:overflow-visible print:h-auto">
+        <div className="p-4 md:p-8 pb-0 print:hidden">
           <Navbar onMenuClick={() => setIsMobileMenuOpen(true)} />
         </div>
         
-        <main className="flex-1 overflow-y-auto p-4 md:px-8 pb-8">
+        <main className="flex-1 overflow-y-auto p-4 md:px-8 pb-8 print:overflow-visible print:p-0">
           {children}
         </main>
       </div>
