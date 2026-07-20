@@ -5,16 +5,16 @@ import logoKarsacipta from "../assets/logo-karsacipta.png";
 export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [jabatan, setJabatan] = useState("Menteri");
   const [divisi, setDivisi] = useState("Kastrat");
-  const [tingkat, setTingkat] = useState(""); 
+  const [tingkat, setTingkat] = useState("");
   const [message, setMessage] = useState("");
   const [isFormLoading, setIsFormLoading] = useState(false);
-  
+
   const [showPassword, setShowPassword] = useState(false);
 
   const fetchUsers = async () => {
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}` 
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
         body: JSON.stringify(payload),
       });
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
 
   const openModal = () => {
     setMessage("");
-    setShowPassword(false); 
+    setShowPassword(false);
     setIsModalOpen(true);
   };
 
@@ -129,10 +129,10 @@ export default function AdminDashboard() {
   return (
     <div className="bg-slate-50 min-h-screen pb-12 font-sans">
       <div className="max-w-6xl mx-auto p-4 sm:p-8 pt-8">
-        
+
         {/* ================= HEADER MODERN DENGAN LOGO ================= */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 bg-white p-6 rounded-[24px] shadow-sm border border-slate-100 gap-4 lg:gap-0 relative overflow-hidden">
-          
+
           {/* Dekorasi Background Abstrak (Opsional untuk estetika) */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-50 to-orange-50 rounded-full blur-3xl -z-10 transform translate-x-20 -translate-y-20 opacity-60"></div>
 
@@ -143,17 +143,11 @@ export default function AdminDashboard() {
               <div className="h-8 w-[2px] bg-slate-200 rounded-full"></div>
               <img src={logoKarsacipta} alt="Logo Karsa Cipta" className="h-14 w-14 object-contain rounded-full bg-white" />
             </div>
-            
-            {/* Judul */}
-            <div>
-              <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Dashboard Admin</h1>
-              <p className="text-slate-500 mt-1.5 font-medium">Pusat kendali hak akses & akun pengurus SIBEM.</p>
-            </div>
           </div>
-          
+
           {/* Tombol Aksi */}
           <div className="flex gap-3 w-full lg:w-auto z-10">
-            <button 
+            <button
               onClick={openModal}
               className="flex-1 lg:flex-none justify-center bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2 text-sm"
             >
@@ -162,8 +156,8 @@ export default function AdminDashboard() {
               </svg>
               Tambah Pengurus
             </button>
-            
-            <button 
+
+            <button
               onClick={handleLogout}
               className="justify-center bg-white hover:bg-red-50 text-red-600 px-5 py-2.5 rounded-xl font-bold transition-colors border border-red-100 hover:border-red-200 flex items-center gap-2 text-sm"
             >
@@ -180,7 +174,7 @@ export default function AdminDashboard() {
               Total: {users.length} Akun
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -207,7 +201,7 @@ export default function AdminDashboard() {
                       <td className="px-5 py-3.5 font-bold text-slate-700 group-hover:text-orange-600 transition-colors text-sm">{user.name}</td>
                       <td className="px-5 py-3.5 text-slate-500 font-medium text-sm">{user.email}</td>
                       <td className="px-5 py-3.5">
-                        <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold border ${getRoleBadgeStyle(user.role)}`}>
+                        <span className={`inline-block whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-bold border ${getRoleBadgeStyle(user.role)}`}>
                           {user.role}
                         </span>
                       </td>
@@ -225,8 +219,8 @@ export default function AdminDashboard() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-all">
           <div className="bg-white p-8 sm:p-10 rounded-[40px] shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200">
-            
-            <button 
+
+            <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 text-slate-400 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-full p-2.5 transition-colors"
             >
@@ -263,15 +257,15 @@ export default function AdminDashboard() {
                   placeholder="Contoh: presbem@sibem.com"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
                 <div className="relative">
                   <input
-                    type={showPassword ? "text" : "password"} 
+                    type={showPassword ? "text" : "password"}
                     name="password" value={formData.password} onChange={handleChange} required minLength={8}
                     className="w-full px-5 py-3.5 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent pr-12 font-medium transition-all"
-                    placeholder="Minimal 8 karakter" 
+                    placeholder="Minimal 8 karakter"
                   />
                   <button
                     type="button" onClick={() => setShowPassword(!showPassword)}
@@ -343,7 +337,7 @@ export default function AdminDashboard() {
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>
                 </div>
                 <div>
-                  Akan didaftarkan sebagai:<br/>
+                  Akan didaftarkan sebagai:<br />
                   <span className="font-extrabold text-orange-700 text-base">
                     {isBendumAtauSekre ? `${jabatan} ${tingkat}`.trim() : isPengurusInti ? jabatan : `${jabatan} ${divisi}`}
                   </span>
@@ -352,9 +346,8 @@ export default function AdminDashboard() {
 
               <button
                 type="submit" disabled={isFormLoading}
-                className={`w-full py-4 mt-2 rounded-2xl text-white font-bold text-lg shadow-lg transition-all ${
-                  isFormLoading ? "bg-orange-300 cursor-not-allowed shadow-none" : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/30 active:scale-[0.98]"
-                }`}
+                className={`w-full py-4 mt-2 rounded-2xl text-white font-bold text-lg shadow-lg transition-all ${isFormLoading ? "bg-orange-300 cursor-not-allowed shadow-none" : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/30 active:scale-[0.98]"
+                  }`}
               >
                 {isFormLoading ? "Menyimpan Data..." : "Tambahkan Pengurus"}
               </button>

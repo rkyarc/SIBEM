@@ -1,1 +1,81 @@
 @import "tailwindcss";
+
+/* 
+  Targeted CSS overrides for Dark Mode 
+  Using a professional Zinc/Neutral palette (#121212 base) to pair elegantly with the Orange brand color.
+*/
+html.dark body {
+  background-color: #121212 !important; /* Deep neutral dark (Material standard) */
+  color: #f4f4f5 !important; /* Zinc 100 */
+}
+
+html.dark .bg-white {
+  background-color: #1c1c1e !important; /* Elevated card surface */
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-slate-50,
+html.dark .bg-gray-100 {
+  background-color: #121212 !important;
+}
+
+/* Typography contrast */
+html.dark .text-gray-900,
+html.dark .text-gray-800 {
+  color: #f4f4f5 !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-gray-600 {
+  color: #d4d4d8 !important; /* Zinc 300 */
+}
+
+html.dark .text-gray-500,
+html.dark .text-gray-400 {
+  color: #a1a1aa !important; /* Zinc 400 */
+}
+
+/* Subtle borders */
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300 {
+  border-color: #27272a !important; /* Zinc 800 */
+}
+
+/* Fix inputs and interactive elements */
+html.dark input.bg-gray-50 {
+  background-color: #27272a !important;
+  border-color: #3f3f46 !important;
+  color: #f4f4f5 !important;
+}
+
+/* Hover effects for Sidebar/Menus */
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #27272a !important;
+}
+html.dark .hover\:text-gray-700:hover {
+  color: #f4f4f5 !important;
+}
+
+/* Adjust orange backgrounds on hover inside dropdowns/menus to be visible in dark mode */
+html.dark .hover\:bg-orange-50:hover {
+  background-color: #27272a !important;
+  color: #f97316 !important;
+}
+html.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.1) !important;
+  color: #fdba74 !important; /* Orange 300 for better contrast on dark */
+}
+html.dark .border-orange-100 {
+  border-color: rgba(249, 115, 22, 0.2) !important;
+}
+html.dark .text-orange-800,
+html.dark .text-orange-600 {
+  color: #fb923c !important; /* Orange 400 */
+}
+
+/* Navbar/Sidebar specific adjustments */
+html.dark header,
+html.dark aside {
+  border-color: #27272a !important;
+}

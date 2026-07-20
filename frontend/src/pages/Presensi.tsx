@@ -26,15 +26,15 @@ interface PesertaSesi {
 export default function Presensi() {
   const [daftarSesi, setDaftarSesi] = useState<SesiPresensi[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
-  
+
   const [viewMode, setViewMode] = useState<"aktif" | "riwayat">("aktif");
   const [selectedHistorySesi, setSelectedHistorySesi] = useState<SesiPresensi | null>(null);
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false); 
-  const [isInputModalOpen, setIsInputModalOpen] = useState(false);   
-  
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [selectedSesi, setSelectedSesi] = useState<SesiPresensi | null>(null);
 
@@ -48,8 +48,8 @@ export default function Presensi() {
   const [daftarPeserta, setDaftarPeserta] = useState<PesertaSesi[]>([]);
   const [isLoadingPeserta, setIsLoadingPeserta] = useState(false);
   const [statusHadir, setStatusHadir] = useState<{ [key: number]: string }>({});
-  
-  const [inputKode, setInputKode] = useState(""); 
+
+  const [inputKode, setInputKode] = useState("");
   const [inputStatus, setInputStatus] = useState("Hadir");
   const [inputLinkIzin, setInputLinkIzin] = useState("");
 
@@ -125,10 +125,10 @@ export default function Presensi() {
     if (!selectedSesi) return;
     setIsFormLoading(true);
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}`, { headers: { Authorization: `Bearer ${getToken()}` }});
+      await axios.delete(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}`, { headers: { Authorization: `Bearer ${getToken()}` } });
       fetchSesiPresensi();
       setIsDeleteModalOpen(false);
-      setSelectedHistorySesi(null); 
+      setSelectedHistorySesi(null);
     } catch (error) {
       alert("Gagal menghapus sesi presensi.");
     } finally {
@@ -152,11 +152,11 @@ export default function Presensi() {
       const res = await axios.post(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}/hadir`, payload, {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }
       });
-      
+
       setMessage(`✅ ${res.data.message}`);
       setDaftarSesi(prev => prev.map(s => s.id === selectedSesi.id ? { ...s, user_has_attended: true } : s));
-      setTimeout(() => { 
-        setIsInputModalOpen(false); setInputKode(""); setInputStatus("Hadir"); setInputLinkIzin(""); setMessage(""); 
+      setTimeout(() => {
+        setIsInputModalOpen(false); setInputKode(""); setInputStatus("Hadir"); setInputLinkIzin(""); setMessage("");
       }, 1500);
     } catch (error: any) {
       setMessage(`❌ ${error.response?.data?.message || "Terjadi kesalahan saat memproses kode."}`);
@@ -175,7 +175,7 @@ export default function Presensi() {
       const res = await axios.get(`http://127.0.0.1:8000/api/sesi-presensi/${sesi.id}/peserta`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
-      
+
       const peserta: PesertaSesi[] = res.data.data;
       setDaftarPeserta(peserta);
 
@@ -197,7 +197,7 @@ export default function Presensi() {
       const res = await axios.get(`http://127.0.0.1:8000/api/sesi-presensi/${sesi.id}/peserta`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
-      
+
       // Filter Paksa: Jika rapat sudah jadi riwayat, ubah semua "Belum Presensi" menjadi "Tidak Hadir"
       const formattedData = res.data.data.map((p: PesertaSesi) => ({
         ...p,
@@ -234,26 +234,17 @@ export default function Presensi() {
   const selectClass = `${inputClass} appearance-none pr-10`;
 
   return (
-    <div className="p-4 sm:p-8 font-sans text-gray-800">
-      
+    <div className="font-sans text-gray-800 space-y-4">
+
       {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {viewMode === "aktif" ? "Presensi Berlangsung" : "Riwayat Presensi"}
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {viewMode === "aktif" ? "Sesi yang sedang aktif dan bisa dilakukan presensi." : "Arsip kegiatan dan rapat yang telah selesai."}
-          </p>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          {isBPH && (
-            <button 
+      {isBPH && (
+        <div className="flex justify-end items-center mb-6">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <button
               onClick={() => {
                 setViewMode(viewMode === "aktif" ? "riwayat" : "aktif");
-                setSelectedHistorySesi(null); 
-              }} 
+                setSelectedHistorySesi(null);
+              }}
               className="flex-1 sm:flex-none bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-bold border border-gray-200 transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap"
             >
               {viewMode === "aktif" ? (
@@ -262,35 +253,35 @@ export default function Presensi() {
                 <><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" /></svg> Kembali</>
               )}
             </button>
-          )}
 
-          {isBPH && viewMode === "aktif" && (
-            <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
-              Buat Presensi
-            </button>
-          )}
+            {viewMode === "aktif" && !isPageLoading && filteredSesi.length > 0 && (
+              <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
+                Buat Presensi
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ================= PAGE RENDERER ================= */}
       {viewMode === "riwayat" && selectedHistorySesi ? (
         // ----------------- TAMPILAN DETAIL PAGE RIWAYAT -----------------
         <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-5 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <button 
+          <button
             onClick={() => setSelectedHistorySesi(null)}
             className="text-xs font-bold text-gray-400 hover:text-orange-600 mb-4 flex items-center gap-2 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
             Kembali ke Daftar Riwayat
           </button>
-          
+
           <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-4">
             <div>
               <h2 className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-1.5">Hasil Rekapitulasi Kehadiran</h2>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">{selectedHistorySesi.nama_kegiatan}</h1>
               <p className="text-gray-500 font-medium text-sm mt-1">{selectedHistorySesi.tanggal} | {selectedHistorySesi.waktu_mulai.substring(0, 5)} - {selectedHistorySesi.batas_waktu.substring(0, 5)} WIB</p>
             </div>
-            
+
             {isBPH && (
               <button onClick={() => { setSelectedSesi(selectedHistorySesi); setIsDeleteModalOpen(true); }} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
@@ -302,7 +293,14 @@ export default function Presensi() {
             {isLoadingPeserta ? (
               <div className="text-center py-12 text-gray-400 font-medium">Memuat data anggota...</div>
             ) : daftarPeserta.length === 0 ? (
-              <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">Tidak ada data anggota terdaftar.</div>
+              <div className="flex flex-col items-center justify-center py-16 px-4 bg-gray-50/50 rounded-2xl border border-gray-100 border-dashed">
+                <div className="w-16 h-16 mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 font-medium">Tidak ada data peserta terdaftar.</p>
+              </div>
             ) : (
               daftarPeserta.map((peserta) => (
                 <div key={peserta.user_id} className="flex flex-col sm:flex-row justify-between sm:items-center p-4 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 shadow-sm transition-colors gap-4">
@@ -310,21 +308,20 @@ export default function Presensi() {
                     <p className="font-bold text-gray-900 text-sm">{peserta.name}</p>
                     <p className="text-xs font-semibold text-gray-500 mt-0.5">{peserta.role}</p>
                   </div>
-                  
+
                   <div className="flex items-center flex-wrap gap-3">
-                    <span className={`px-4 py-1.5 rounded-lg text-xs font-bold border tracking-wide ${
-                      peserta.status === 'Hadir' ? 'bg-green-100 text-green-700 border-green-300' :
-                      peserta.status === 'Izin' ? 'bg-orange-100 text-orange-700 border-orange-300' :
-                      'bg-red-100 text-red-700 border-red-300' // Untuk "Tidak Hadir"
-                    }`}>
+                    <span className={`px-4 py-1.5 rounded-lg text-xs font-bold border tracking-wide ${peserta.status === 'Hadir' ? 'bg-green-100 text-green-700 border-green-300' :
+                        peserta.status === 'Izin' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                          'bg-red-100 text-red-700 border-red-300' // Untuk "Tidak Hadir"
+                      }`}>
                       {peserta.status}
                     </span>
 
                     {peserta.status === 'Izin' && peserta.bukti_izin && (
-                      <a 
-                        href={peserta.bukti_izin} 
-                        target="_blank" 
-                        rel="noreferrer" 
+                      <a
+                        href={peserta.bukti_izin}
+                        target="_blank"
+                        rel="noreferrer"
                         className="text-xs font-bold text-orange-600 hover:text-white hover:bg-orange-600 bg-white px-3 py-1.5 rounded-lg border border-orange-200 transition-colors flex items-center gap-1.5 shadow-sm"
                       >
                         Lihat Surat
@@ -342,8 +339,28 @@ export default function Presensi() {
         isPageLoading ? (
           <div className="text-center py-12 text-gray-400 font-medium">Memuat data sesi...</div>
         ) : filteredSesi.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50 font-medium">
-            {viewMode === "aktif" ? "Tidak ada sesi presensi yang sedang berlangsung." : "Belum ada riwayat presensi yang tersimpan."}
+          <div className="flex flex-col items-center justify-center p-12 text-gray-500 bg-white rounded-3xl border border-gray-100 shadow-sm min-h-[350px] animate-in fade-in duration-500">
+            <div className="w-24 h-24 mb-5 bg-orange-50 rounded-full flex items-center justify-center">
+              <svg className="w-12 h-12 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {viewMode === "aktif" ? "Belum Ada Presensi Aktif" : "Belum Ada Riwayat"}
+            </h3>
+            <p className="text-gray-500 text-sm max-w-sm text-center mb-6">
+              {viewMode === "aktif" 
+                ? "Saat ini tidak ada sesi presensi yang sedang berlangsung. Sesi presensi baru akan muncul di sini." 
+                : "Data riwayat presensi kegiatan yang sudah selesai atau ditutup akan tampil di sini."}
+            </p>
+            {isBPH && viewMode === "aktif" && (
+              <button 
+                onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-sm shadow-orange-600/20 transition-all flex items-center gap-2"
+              >
+                Buat Presensi
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -353,8 +370,8 @@ export default function Presensi() {
               if (viewMode === "riwayat") {
                 return (
                   <div key={sesi.id} className="relative group animate-in zoom-in-95 duration-300">
-                    <div 
-                      onClick={() => openHistoryDetail(sesi)} 
+                    <div
+                      onClick={() => openHistoryDetail(sesi)}
                       className="cursor-pointer bg-white border border-gray-100 rounded-[20px] shadow-sm hover:border-orange-300 hover:shadow-md p-4 flex flex-col transition-all opacity-95 h-full"
                     >
                       <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-[16px] text-[10px] font-bold bg-gray-100 text-gray-500 tracking-wider">SELESAI</div>
@@ -367,7 +384,7 @@ export default function Presensi() {
                     </div>
 
                     {isBPH && (
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); setSelectedSesi(sesi); setIsDeleteModalOpen(true); }}
                         className="absolute bottom-4 right-4 p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors z-10 opacity-0 group-hover:opacity-100 focus:opacity-100"
                         title="Hapus Riwayat"
@@ -421,15 +438,15 @@ export default function Presensi() {
 
                     <div className="flex gap-2 flex-1 justify-end flex-wrap">
                       {sesi.user_has_attended ? (
-                         <div className="bg-green-50 text-green-700 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-green-200 cursor-default whitespace-nowrap">
-                           ✅ Sudah Presensi
-                         </div>
+                        <div className="bg-green-50 text-green-700 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-green-200 cursor-default whitespace-nowrap">
+                          ✅ Sudah Presensi
+                        </div>
                       ) : (
                         <button onClick={() => { setSelectedSesi(sesi); setIsInputModalOpen(true); setMessage(""); setInputKode(""); setInputStatus("Hadir"); setInputLinkIzin(""); }} className="bg-white text-orange-600 hover:bg-orange-50 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-orange-200 transition-colors whitespace-nowrap shadow-sm">
                           Isi Presensi
                         </button>
                       )}
-                      
+
                       {isBPH && (
                         <button onClick={() => openActionModal(sesi)} className="bg-orange-600 text-white hover:bg-orange-700 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-transparent shadow-sm shadow-orange-500/30 transition-all active:scale-[0.98] whitespace-nowrap">
                           Daftar Hadir
@@ -450,7 +467,7 @@ export default function Presensi() {
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="bg-white p-6 sm:p-8 rounded-[32px] shadow-2xl w-full max-w-sm relative text-center animate-in zoom-in-95 duration-200">
             <button onClick={() => setIsInputModalOpen(false)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-full p-2 transition-colors">✕</button>
-            
+
             <h2 className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] mb-1.5">Presensi Kehadiran</h2>
             <h1 className="text-xl font-extrabold text-gray-900 mb-6 leading-tight">{selectedSesi.nama_kegiatan}</h1>
 
@@ -470,10 +487,10 @@ export default function Presensi() {
               {inputStatus === "Izin" ? (
                 <div className="mb-6 text-left animate-in fade-in slide-in-from-right-2 duration-300">
                   <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Link Bukti / Surat Izin (G-Drive dll)</label>
-                  <input 
-                    type="url" 
-                    value={inputLinkIzin} 
-                    onChange={(e) => setInputLinkIzin(e.target.value)} 
+                  <input
+                    type="url"
+                    value={inputLinkIzin}
+                    onChange={(e) => setInputLinkIzin(e.target.value)}
                     placeholder="https://..."
                     className="w-full text-sm font-medium py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-600 transition-all"
                     required
@@ -481,10 +498,10 @@ export default function Presensi() {
                 </div>
               ) : (
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300">
-                  <input 
-                    type="text" 
-                    value={inputKode} 
-                    onChange={(e) => setInputKode(e.target.value.toUpperCase())} 
+                  <input
+                    type="text"
+                    value={inputKode}
+                    onChange={(e) => setInputKode(e.target.value.toUpperCase())}
                     maxLength={6}
                     placeholder="Kode 6 Digit"
                     className="w-full text-center font-mono tracking-[0.3em] text-2xl font-black py-4 bg-gray-50 border border-gray-200 rounded-2xl mb-6 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-600 uppercase transition-all"
@@ -516,44 +533,52 @@ export default function Presensi() {
               {isLoadingPeserta ? (
                 <div className="text-center py-12 text-gray-400 font-medium">Memuat anggota...</div>
               ) : daftarPeserta.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 font-medium border-2 border-dashed border-gray-200 m-2 rounded-xl">Tidak ada anggota yang terdaftar.</div>
+              <div className="flex flex-col items-center justify-center py-16 px-4 bg-gray-50/50 rounded-2xl border border-gray-100 border-dashed m-2">
+                <div className="w-16 h-16 mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 font-medium">Belum ada anggota yang terdaftar untuk sesi ini.</p>
+              </div>
               ) : (
                 <div className="space-y-2">
                   {daftarPeserta.map((peserta) => {
                     const isBelumPresensi = statusHadir[peserta.user_id] === 'Belum Presensi';
-                    
-                    return (
-                    <div key={peserta.user_id} className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white rounded-xl border shadow-sm gap-4 transition-all ${isBelumPresensi ? 'border-dashed border-gray-300 opacity-80 hover:opacity-100' : 'border-gray-100 hover:border-gray-200'}`}>
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{peserta.name}</p>
-                        <p className="text-xs font-semibold text-gray-500 mt-0.5">{peserta.role}</p>
-                        {isBelumPresensi && <p className="text-[10px] text-orange-600 font-bold mt-1.5 bg-orange-50 border border-orange-100 inline-block px-2 py-0.5 rounded-md uppercase tracking-wider">Belum Ada Aksi</p>}
-                      </div>
-                      
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="flex flex-wrap gap-2">
-                          {['Hadir', 'Izin', 'Tidak Hadir'].map((status) => {
-                            const isSelected = statusHadir[peserta.user_id] === status;
-                            let activeColor = "";
-                            if(status === 'Hadir') activeColor = "bg-green-100 text-green-700 border-green-300 shadow-sm";
-                            if(status === 'Izin') activeColor = "bg-orange-100 text-orange-700 border-orange-300 shadow-sm";
-                            if(status === 'Tidak Hadir') activeColor = "bg-red-100 text-red-700 border-red-300 shadow-sm";
 
-                            return (
-                              <button key={status} onClick={() => handleStatusChange(peserta.user_id, status)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${isSelected ? activeColor : "bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}>
-                                {status}
-                              </button>
-                            )
-                          })}
+                    return (
+                      <div key={peserta.user_id} className={`flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white rounded-xl border shadow-sm gap-4 transition-all ${isBelumPresensi ? 'border-dashed border-gray-300 opacity-80 hover:opacity-100' : 'border-gray-100 hover:border-gray-200'}`}>
+                        <div>
+                          <p className="font-bold text-gray-900 text-sm">{peserta.name}</p>
+                          <p className="text-xs font-semibold text-gray-500 mt-0.5">{peserta.role}</p>
+                          {isBelumPresensi && <p className="text-[10px] text-orange-600 font-bold mt-1.5 bg-orange-50 border border-orange-100 inline-block px-2 py-0.5 rounded-md uppercase tracking-wider">Belum Ada Aksi</p>}
                         </div>
-                        {peserta.status === 'Izin' && peserta.bukti_izin && (
-                          <a href={peserta.bukti_izin} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-orange-500 hover:text-orange-700 underline flex items-center gap-1">
-                            Buka Bukti Izin <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
-                          </a>
-                        )}
+
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            {['Hadir', 'Izin', 'Tidak Hadir'].map((status) => {
+                              const isSelected = statusHadir[peserta.user_id] === status;
+                              let activeColor = "";
+                              if (status === 'Hadir') activeColor = "bg-green-100 text-green-700 border-green-300 shadow-sm";
+                              if (status === 'Izin') activeColor = "bg-orange-100 text-orange-700 border-orange-300 shadow-sm";
+                              if (status === 'Tidak Hadir') activeColor = "bg-red-100 text-red-700 border-red-300 shadow-sm";
+
+                              return (
+                                <button key={status} onClick={() => handleStatusChange(peserta.user_id, status)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${isSelected ? activeColor : "bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:bg-gray-50"}`}>
+                                  {status}
+                                </button>
+                              )
+                            })}
+                          </div>
+                          {peserta.status === 'Izin' && peserta.bukti_izin && (
+                            <a href={peserta.bukti_izin} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-orange-500 hover:text-orange-700 underline flex items-center gap-1">
+                              Buka Bukti Izin <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                            </a>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )})}
+                    )
+                  })}
                 </div>
               )}
             </div>

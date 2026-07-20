@@ -25,7 +25,7 @@ export default function Dashboard() {
       try {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
-        
+
         // Fetch All API parallel
         const [anggaranRes, prokerRes, kakRes] = await Promise.all([
           axios.get('http://127.0.0.1:8000/api/anggaran', { headers }).catch(() => ({ data: [] })),
@@ -39,9 +39,9 @@ export default function Dashboard() {
         let filteredKak = kakRes.data;
 
         if (!isBPH && userDivisi) {
-           filteredAnggaran = filteredAnggaran.filter((a: any) => a.divisi?.toLowerCase() === userDivisi.toLowerCase());
-           filteredProker = filteredProker.filter((p: any) => p.divisi?.toLowerCase() === userDivisi.toLowerCase());
-           filteredKak = filteredKak.filter((k: any) => k.divisi?.toLowerCase() === userDivisi.toLowerCase());
+          filteredAnggaran = filteredAnggaran.filter((a: any) => a.divisi?.toLowerCase() === userDivisi.toLowerCase());
+          filteredProker = filteredProker.filter((p: any) => p.divisi?.toLowerCase() === userDivisi.toLowerCase());
+          filteredKak = filteredKak.filter((k: any) => k.divisi?.toLowerCase() === userDivisi.toLowerCase());
         }
 
         setAnggaranData(filteredAnggaran);
@@ -53,16 +53,16 @@ export default function Dashboard() {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, [isBPH, userDivisi]);
 
   // 1. Dynamic Data: Monitoring Pagu Anggaran
   const totalPemasukan = anggaranData.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
   const totalPengeluaran = anggaranData.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
-  
+
   // Jika pemasukan belum ada, kita asumsikan pagu default 10jt agar simulasi diagram berjalan. Jika ada, gunakan totalPemasukan asli.
-  const paguTotal = totalPemasukan > 0 ? totalPemasukan : (isBPH ? 50000000 : 10000000); 
+  const paguTotal = totalPemasukan > 0 ? totalPemasukan : (isBPH ? 50000000 : 10000000);
   const paguAnggaran = {
     total: paguTotal,
     terpakai: totalPengeluaran,
@@ -72,12 +72,12 @@ export default function Dashboard() {
   const statusPagu = persentasePagu > 80 ? 'Kritis' : persentasePagu > 50 ? 'Waspada' : 'Aman';
   // 3. Dynamic Data: Status KAK & Kegiatan Helpers
   const formatTanggal = (tanggal: string) => {
-     if (!tanggal) return "-";
-     return new Date(tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    if (!tanggal) return "-";
+    return new Date(tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   };
   const formatWaktu = (tanggal: string) => {
-     if (!tanggal) return "-";
-     return new Date(tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    if (!tanggal) return "-";
+    return new Date(tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
   };
 
   const formatStatusText = (status: string) => {
@@ -100,7 +100,7 @@ export default function Dashboard() {
   const filteredProkers = prokerData.filter(p => {
     const statusText = formatStatusText(p.status);
     const periodeText = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : "";
-    
+
     const matchSearch = !searchQuery || p.nama_proker.toLowerCase().includes(searchQuery.toLowerCase());
     const matchStatus = statusFilter === 'Semua Status' || statusText === statusFilter;
     const matchPeriode = periodeFilter === 'Semua Periode' || periodeText === periodeFilter;
@@ -116,13 +116,13 @@ export default function Dashboard() {
   const jumlahProker = approvedProkers.length;
 
   const jumlahProkerSelesai = approvedProkers.filter(p => {
-      const kakApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'kak' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
-      const lpjApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'lpj' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
-      return kakApproved && lpjApproved;
+    const kakApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'kak' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
+    const lpjApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'lpj' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
+    return kakApproved && lpjApproved;
   }).length;
 
   const jumlahProkerMenunggu = jumlahProker - jumlahProkerSelesai;
-  
+
   const statistik = {
     totalProker: jumlahProker,
     selesai: jumlahProkerSelesai,
@@ -138,7 +138,7 @@ export default function Dashboard() {
   }));
 
   const getStatusStyle = (status: string) => {
-    switch(status) {
+    switch (status) {
       case "Disetujui": return "text-green-600 bg-green-50";
       case "Ditolak": return "text-red-600 bg-red-50";
       case "Direvisi": return "text-orange-600 bg-orange-50";
@@ -149,63 +149,63 @@ export default function Dashboard() {
 
   // 4. Progress Kegiatan (3 Proker dengan update terbaru)
   const progressKegiatan = [...filteredProkers]
-     .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-     .slice(0, 3)
-     .map((p, index) => {
-     const isProkerAcc = p.status?.toLowerCase() === 'disetujui' || p.status?.toLowerCase() === 'acc';
-     const isProkerTolak = p.status?.toLowerCase() === 'ditolak' || p.status?.toLowerCase() === 'tolak';
-     
-     const kakApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'kak' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
-     const lpjApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'lpj' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
-     
-     let percentage = 0;
-     if (isProkerTolak) percentage = 0;
-     else if (lpjApproved) percentage = 100;
-     else if (kakApproved) percentage = 75;
-     else if (isProkerAcc) percentage = 25;
-     else percentage = 10; // Proker masih pending
-     
-     const colors = [
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 3)
+    .map((p, index) => {
+      const isProkerAcc = p.status?.toLowerCase() === 'disetujui' || p.status?.toLowerCase() === 'acc';
+      const isProkerTolak = p.status?.toLowerCase() === 'ditolak' || p.status?.toLowerCase() === 'tolak';
+
+      const kakApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'kak' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
+      const lpjApproved = kakData.some(k => k.nama_kegiatan === p.nama_proker && k.tipe_pengajuan === 'lpj' && (k.status.toLowerCase() === 'disetujui' || k.status.toLowerCase() === 'acc'));
+
+      let percentage = 0;
+      if (isProkerTolak) percentage = 0;
+      else if (lpjApproved) percentage = 100;
+      else if (kakApproved) percentage = 75;
+      else if (isProkerAcc) percentage = 25;
+      else percentage = 10; // Proker masih pending
+
+      const colors = [
         { c: "text-orange-400", b: "bg-orange-400" },
         { c: "text-green-500", b: "bg-green-500" },
         { c: "text-blue-500", b: "bg-blue-500" }
-     ];
-     return {
+      ];
+      return {
         id: p.id,
         nama: p.nama_proker,
         persentase: percentage,
         color: colors[index % colors.length].c,
         bg: colors[index % colors.length].b
-     };
-  });
+      };
+    });
 
   // 5. Approval Terbaru (Kini dari KAK & LPJ, ambil 3 terbaru)
   const approvalTerbaru = [...kakData]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 3)
     .map(k => {
-       const textStatus = formatStatusText(k.status);
-       let colorClass = "bg-gray-100 text-gray-600";
-       if (textStatus === "Disetujui") colorClass = "bg-green-100 text-green-600";
-       if (textStatus === "Direvisi") colorClass = "bg-orange-100 text-orange-600";
-       if (textStatus === "Ditolak") colorClass = "bg-red-100 text-red-600";
-       if (textStatus === "Menunggu Approval") colorClass = "bg-yellow-100 text-yellow-600";
-       
-       return {
-          id: k.id,
-          nama: k.nama_kegiatan,
-          tipe: k.tipe_pengajuan ? k.tipe_pengajuan.toUpperCase() : 'KAK',
-          divisi: k.divisi,
-          status: textStatus,
-          colorClass: colorClass
-       };
-  });
+      const textStatus = formatStatusText(k.status);
+      let colorClass = "bg-gray-100 text-gray-600";
+      if (textStatus === "Disetujui") colorClass = "bg-green-100 text-green-600";
+      if (textStatus === "Direvisi") colorClass = "bg-orange-100 text-orange-600";
+      if (textStatus === "Ditolak") colorClass = "bg-red-100 text-red-600";
+      if (textStatus === "Menunggu Approval") colorClass = "bg-yellow-100 text-yellow-600";
+
+      return {
+        id: k.id,
+        nama: k.nama_kegiatan,
+        tipe: k.tipe_pengajuan ? k.tipe_pengajuan.toUpperCase() : 'KAK',
+        divisi: k.divisi,
+        status: textStatus,
+        colorClass: colorClass
+      };
+    });
 
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center space-x-2">
-         <div className="w-8 h-8 border-4 border-[#FBBF24] border-t-transparent rounded-full animate-spin"></div>
-         <p className="text-gray-500 font-medium">Memuat Dashboard...</p>
+        <div className="w-8 h-8 border-4 border-[#FBBF24] border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500 font-medium">Memuat Dashboard...</p>
       </div>
     );
   }
@@ -224,7 +224,7 @@ export default function Dashboard() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <select 
+        <select
           className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -235,34 +235,34 @@ export default function Dashboard() {
           <option value="Ditolak">Ditolak</option>
           <option value="Disetujui">Disetujui</option>
         </select>
-        <select 
+        <select
           className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={periodeFilter}
           onChange={(e) => setPeriodeFilter(e.target.value)}
         >
           <option value="Semua Periode">Semua Periode</option>
           {uniquePeriode.map((periode, index) => (
-             <option key={index} value={periode}>{periode}</option>
+            <option key={index} value={periode}>{periode}</option>
           ))}
         </select>
-        <select 
+        <select
           className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={kementerianFilter}
           onChange={(e) => setKementerianFilter(e.target.value)}
         >
           <option value="Semua Kementerian">Semua Kementerian</option>
           {uniqueKementerian.map((kementerian, index) => (
-             <option key={index} value={kementerian}>{kementerian}</option>
+            <option key={index} value={kementerian}>{kementerian}</option>
           ))}
         </select>
-        <button 
+        <button
           onClick={() => {
             setSearchQuery('');
             setStatusFilter('Semua Status');
             setPeriodeFilter('Semua Periode');
             setKementerianFilter('Semua Kementerian');
           }}
-          className="px-6 py-2 bg-[#FBBF24] hover:bg-yellow-500 text-white rounded-xl font-medium transition text-sm shadow-sm w-full sm:w-auto"
+          className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-medium transition text-sm shadow-sm w-full sm:w-auto"
         >
           Hapus Filter
         </button>
@@ -272,69 +272,69 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Kiri (Lebar) */}
         <div className="lg:col-span-8 space-y-4">
-          
+
           {/* Monitoring Pagu Anggaran */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-50">
             <h3 className="font-bold text-gray-800 mb-4">Monitoring Pagu Anggaran</h3>
-            
-            <div className="flex flex-col md:flex-row gap-6 items-center justify-center py-1">
-                 {/* Donut Chart */}
-                 <div className="relative w-32 h-32 shrink-0">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                       {/* Background Circle */}
-                       <circle cx="50" cy="50" r="40" fill="none" stroke="#F3F4F6" strokeWidth="12" />
-                       {/* Progress Circle */}
-                       <circle 
-                         cx="50" cy="50" r="40" fill="none" 
-                         stroke={statusPagu === 'Kritis' ? '#EF4444' : statusPagu === 'Waspada' ? '#FBBF24' : '#3B82F6'} 
-                         strokeWidth="12" 
-                         strokeDasharray="251.2"
-                         strokeDashoffset={251.2 - (persentasePagu / 100) * 251.2}
-                         strokeLinecap="round"
-                         className="transition-all duration-1000 ease-out"
-                       />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center mt-1">
-                       <span className={`text-2xl font-bold ${statusPagu === 'Kritis' ? 'text-red-500' : 'text-blue-500'}`}>
-                         {persentasePagu.toFixed(0)}%
-                       </span>
-                       <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-1">Terpakai</span>
-                    </div>
-                 </div>
 
-                 {/* Legends / Data */}
-                 <div className="flex-1 space-y-4 w-full">
-                    <div className="flex justify-between items-center pb-3 border-b border-gray-50">
-                       <div className="flex items-center gap-3">
-                          <div className={`w-3 h-3 rounded-full ${statusPagu === 'Kritis' ? 'bg-red-500' : 'bg-[#3B82F6]'}`}></div>
-                          <div>
-                            <p className="text-[11px] text-gray-400 font-bold uppercase">Sisa Pagu</p>
-                            <p className="text-lg font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.sisa)}</p>
-                          </div>
-                       </div>
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-center py-1">
+              {/* Donut Chart */}
+              <div className="relative w-32 h-32 shrink-0">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  {/* Background Circle */}
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#F3F4F6" strokeWidth="12" />
+                  {/* Progress Circle */}
+                  <circle
+                    cx="50" cy="50" r="40" fill="none"
+                    stroke={statusPagu === 'Kritis' ? '#EF4444' : statusPagu === 'Waspada' ? '#FBBF24' : '#3B82F6'}
+                    strokeWidth="12"
+                    strokeDasharray="251.2"
+                    strokeDashoffset={251.2 - (persentasePagu / 100) * 251.2}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center mt-1">
+                  <span className={`text-2xl font-bold ${statusPagu === 'Kritis' ? 'text-red-500' : 'text-blue-500'}`}>
+                    {persentasePagu.toFixed(0)}%
+                  </span>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-1">Terpakai</span>
+                </div>
+              </div>
+
+              {/* Legends / Data */}
+              <div className="flex-1 space-y-4 w-full">
+                <div className="flex justify-between items-center pb-3 border-b border-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${statusPagu === 'Kritis' ? 'bg-red-500' : 'bg-[#3B82F6]'}`}></div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-bold uppercase">Sisa Pagu</p>
+                      <p className="text-lg font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.sisa)}</p>
                     </div>
-                    <div className="flex justify-between items-center pb-3 border-b border-gray-50">
-                       <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-[#EF4444]"></div>
-                          <div>
-                            <p className="text-[11px] text-gray-400 font-bold uppercase">Total Terpakai</p>
-                            <p className="text-sm font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.terpakai)}</p>
-                          </div>
-                       </div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center pb-3 border-b border-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-[#EF4444]"></div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-bold uppercase">Total Terpakai</p>
+                      <p className="text-sm font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.terpakai)}</p>
                     </div>
-                    <div className="flex justify-between items-center">
-                       <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full bg-[#10B981]"></div>
-                          <div>
-                            <p className="text-[11px] text-gray-400 font-bold uppercase">Total Pagu {isBPH ? '(BEM)' : '(Kementerian)'}</p>
-                            <p className="text-sm font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.total)}</p>
-                          </div>
-                       </div>
-                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-md ${statusPagu === 'Kritis' ? 'bg-red-50 text-red-600' : statusPagu === 'Waspada' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}>
-                         {statusPagu}
-                       </span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-[#10B981]"></div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 font-bold uppercase">Total Pagu {isBPH ? '(BEM)' : '(Kementerian)'}</p>
+                      <p className="text-sm font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.total)}</p>
                     </div>
-                 </div>
+                  </div>
+                  <span className={`px-2.5 py-1 text-[10px] font-bold rounded-md ${statusPagu === 'Kritis' ? 'bg-red-50 text-red-600' : statusPagu === 'Waspada' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600'}`}>
+                    {statusPagu}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -381,7 +381,7 @@ export default function Dashboard() {
 
         {/* Kanan (Sempit) */}
         <div className="lg:col-span-4 space-y-4">
-          
+
           {/* Statistik Performa Kementerian */}
           <div className="grid grid-cols-3 gap-2 md:gap-3">
             {/* Card 1: Total Proker */}
@@ -449,32 +449,31 @@ export default function Dashboard() {
               <p className="text-xs text-gray-400 text-center">Belum ada proker.</p>
             )}
           </div>
-          
-           {/* Pengajuan KAK/LPJ Terbaru */}
-           <div className="bg-blue-50 p-4 rounded-3xl shadow-sm border border-blue-100 min-h-[120px] relative overflow-hidden">
-              <div className="absolute right-[-20px] bottom-[-20px] bg-blue-400 w-24 h-24 rounded-3xl opacity-20 rotate-12"></div>
-              <h3 className="font-bold text-blue-900 text-[13px] relative z-10 mb-3">Approval KAK/LPJ Terbaru</h3>
-              <div className="space-y-2 relative z-10">
-                {approvalTerbaru.length > 0 ? approvalTerbaru.map((approval) => (
-                  <div key={approval.id} className="bg-white p-2 rounded-xl flex items-center gap-3 border border-blue-50 shadow-sm transition hover:shadow-md">
-                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <p className="text-[11px] font-bold text-gray-800 truncate">{approval.nama}</p>
-                          <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold shrink-0 ${approval.tipe === 'LPJ' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
-                            {approval.tipe}
-                          </span>
-                        </div>
-                        <p className="text-[9px] text-gray-400 truncate">{approval.divisi}</p>
-                     </div>
-                     <span className={`text-[9px] font-bold px-2 py-0.5 rounded shrink-0 ${approval.colorClass}`}>
-                       {approval.status}
-                     </span>
+
+          {/* Pengajuan KAK/LPJ Terbaru */}
+          <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-50 min-h-[120px] relative overflow-hidden">
+            <h3 className="font-bold text-gray-800 text-[13px] relative z-10 mb-3">Approval KAK/LPJ Terbaru</h3>
+            <div className="space-y-2 relative z-10">
+              {approvalTerbaru.length > 0 ? approvalTerbaru.map((approval) => (
+                <div key={approval.id} className="bg-gray-50 p-2 rounded-xl flex items-center gap-3 border border-gray-100 shadow-sm transition hover:shadow-md">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="text-[11px] font-bold text-gray-800 truncate">{approval.nama}</p>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold shrink-0 ${approval.tipe === 'LPJ' ? 'bg-purple-50 text-purple-600' : 'bg-orange-50 text-orange-600'}`}>
+                        {approval.tipe}
+                      </span>
+                    </div>
+                    <p className="text-[9px] text-gray-400 truncate">{approval.divisi}</p>
                   </div>
-                )) : (
-                  <p className="text-[11px] text-blue-700 font-medium">Belum ada history KAK/LPJ.</p>
-                )}
-              </div>
-           </div>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded shrink-0 ${approval.colorClass}`}>
+                    {approval.status}
+                  </span>
+                </div>
+              )) : (
+                <p className="text-[11px] text-gray-500 font-medium">Belum ada history KAK/LPJ.</p>
+              )}
+            </div>
+          </div>
 
         </div>
       </div>

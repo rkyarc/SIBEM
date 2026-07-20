@@ -34,7 +34,7 @@ const PengajuanKAK = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
-  const [approvedProkers, setApprovedProkers] = useState<{id: number, nama_proker: string}[]>([]);
+  const [approvedProkers, setApprovedProkers] = useState<{ id: number, nama_proker: string }[]>([]);
 
   const [isRevisiModalOpen, setIsRevisiModalOpen] = useState(false);
   const [revisiData, setRevisiData] = useState({ id: 0, status_baru: '', catatan: '' });
@@ -43,12 +43,12 @@ const PengajuanKAK = () => {
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
   const userRole = user?.role || "";
-  
+
   const isSekretaris = userRole.toLowerCase().includes("sekretaris");
   const isMenteri = userRole.toLowerCase().includes("menteri");
   const isStaff = userRole.toLowerCase().includes("staff") || userRole.toLowerCase().includes("staf");
   const isBPH = ["presiden", "wakil", "bendahara", "sekretaris"].some(keyword => userRole.toLowerCase().includes(keyword));
-  
+
   const userDivisi = userRole.split(' ').slice(1).join(' ');
 
   const [formData, setFormData] = useState<{
@@ -80,14 +80,14 @@ const PengajuanKAK = () => {
         const approved = prokerResponse.data.filter((p: any) => {
           const pStatus = p.status ? p.status.toLowerCase().trim() : "";
           const isApproved = pStatus === "disetujui" || pStatus === "acc";
-          
+
           // Cek kembali isBPH karena letaknya di scope luar
           const bphCheck = ["presiden", "wakil", "bendahara", "sekretaris"].some(keyword => userRole.toLowerCase().includes(keyword));
-          
+
           const pDivisi = p.divisi ? p.divisi.toLowerCase().trim() : "";
           const uDivisi = userDivisi ? userDivisi.toLowerCase().trim() : "";
           const isOwn = bphCheck || pDivisi === uDivisi || pDivisi.includes(uDivisi) || uDivisi.includes(pDivisi);
-          
+
           return isApproved && isOwn;
         });
         setApprovedProkers(approved);
@@ -101,6 +101,20 @@ const PengajuanKAK = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDaftarPengajuan(response.data);
+        
+        // Auto-open modal dari notifikasi
+        const openRevisiId = localStorage.getItem("open_revisi_id");
+        const openRevisiTab = localStorage.getItem("open_revisi_tab");
+        if (openRevisiId) {
+          const target = response.data.find((p: KAKData) => p.id.toString() === openRevisiId);
+          if (target) {
+            setSelectedPengajuan(target);
+            setIsDetailModalOpen(true);
+            if (openRevisiTab) setActiveTab(openRevisiTab as 'kak' | 'lpj');
+          }
+          localStorage.removeItem("open_revisi_id");
+          localStorage.removeItem("open_revisi_tab");
+        }
       } catch (error) {
         console.error("Gagal mengambil data KAK:", error);
         // Jangan tampilkan alert error karena KAK API mungkin belum ada, set empty array saja.
@@ -108,6 +122,7 @@ const PengajuanKAK = () => {
       }
     } finally {
       if (!silent) setIsFetching(false);
+      window.dispatchEvent(new Event("refresh-notifications"));
     }
   };
 
@@ -146,7 +161,7 @@ const PengajuanKAK = () => {
 
     try {
       const token = localStorage.getItem("token");
-      
+
       // Jika form diedit, status otomatis kembali ke pending agar dicek ulang sekretaris
       const payload = {
         ...formData,
@@ -262,30 +277,19 @@ const PengajuanKAK = () => {
   const filteredData = daftarPengajuan.filter((item) => {
     const matchTab = (item.tipe_pengajuan || 'kak') === activeTab;
     const matchRole = isBPH || item.divisi === userDivisi;
-    
+
     // Sekretaris tidak perlu melihat pengajuan yang sedang direvisi (menunggu respon kementerian)
     if (isSekretaris && item.status.toLowerCase().startsWith('revisi')) {
       return false;
     }
 
-    return matchTab && matchRole;
+return matchTab && matchRole;
   });
 
   return (
     <div className="space-y-4 relative pb-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Pengajuan KAK & LPJ
-          </h1>
-          <p className="text-gray-500 text-sm md:text-base mt-1">
-            Kelola dan pantau pengajuan KAK & LPJ Kegiatan BEM.
-          </p>
-        </div>
-        
-        {/* Tombol Ajukan Khusus Kementerian (Menteri / Staff) */}
-        {(isMenteri || isStaff) && (
+      {(isMenteri || isStaff) && (
+        <div className="flex justify-end items-center mb-6">
           <div className="flex gap-2 w-full md:w-auto">
             <button
               onClick={() => handleAddClick('kak')}
@@ -295,13 +299,13 @@ const PengajuanKAK = () => {
             </button>
             <button
               onClick={() => handleAddClick('lpj')}
-              className="flex-1 md:flex-none bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition shadow-sm font-medium text-sm"
+              className="flex-1 md:flex-none bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium text-sm"
             >
               + Ajukan LPJ
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* TABS */}
       <div className="flex border-b border-gray-200">
@@ -332,19 +336,18 @@ const PengajuanKAK = () => {
             const isOwnRevisi = isRevisi && (isMenteri || isStaff);
 
             return (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 onClick={() => handleDetailClick(item)}
-                className={`rounded-xl shadow-sm border p-4 transition cursor-pointer flex flex-col h-full relative overflow-hidden ${
-                  isOwnRevisi 
-                    ? 'bg-orange-50 border-orange-400 hover:shadow-md' 
+                className={`rounded-xl shadow-sm border p-4 transition cursor-pointer flex flex-col h-full relative overflow-hidden ${isOwnRevisi
+                    ? 'bg-orange-50 border-orange-400 hover:shadow-md'
                     : 'bg-white border-gray-100 hover:shadow-md hover:border-orange-200'
-                }`}
+                  }`}
               >
                 {isOwnRevisi && (
                   <div className="absolute top-0 right-0 w-full h-1 bg-orange-500"></div>
                 )}
-                
+
                 <div className="flex justify-between items-start mb-2">
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.tipe_pengajuan === 'lpj' ? 'bg-indigo-100 text-indigo-700' : 'bg-orange-100 text-orange-700'}`}>
                     {item.tipe_pengajuan?.toUpperCase() || 'KAK'}
@@ -353,10 +356,10 @@ const PengajuanKAK = () => {
                     {formatStatusText(item.status)}
                   </span>
                 </div>
-                
+
                 <h3 className="text-base font-bold text-gray-800 line-clamp-2 mb-1">{item.nama_kegiatan}</h3>
                 <p className="text-xs font-medium text-gray-500 mb-3">{item.divisi}</p>
-                
+
                 {isOwnRevisi && (
                   <div className="mb-4 bg-orange-100 text-orange-800 text-xs px-3 py-2 rounded-lg border border-orange-200 font-medium flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
@@ -519,11 +522,11 @@ const PengajuanKAK = () => {
                     }
                     openRevisiModal(selectedPengajuan, `revisi ${nextRevisiNum}`);
                   }} className="bg-orange-100 text-orange-700 hover:bg-orange-200 py-2 rounded-lg text-sm font-bold transition">
-                    {selectedPengajuan.status.toLowerCase().startsWith('revisi ') 
-                      ? `Beri Revisi ${parseInt(selectedPengajuan.status.split(' ')[1]) + 1 || 2}` 
+                    {selectedPengajuan.status.toLowerCase().startsWith('revisi ')
+                      ? `Beri Revisi ${parseInt(selectedPengajuan.status.split(' ')[1]) + 1 || 2}`
                       : 'Beri Revisi'}
                   </button>
-                  <button onClick={() => handleStatusChangeFast(selectedPengajuan, 'disetujui')} className="bg-green-500 text-white hover:bg-green-600 py-2 rounded-lg text-sm font-bold transition shadow-sm">ACC Pengajuan</button>
+                  <button onClick={() => handleStatusChangeFast(selectedPengajuan, 'disetujui')} className="bg-orange-500 text-white hover:bg-orange-600 py-2 rounded-lg text-sm font-bold transition shadow-sm">ACC Pengajuan</button>
                 </div>
               </div>
             )}
@@ -562,7 +565,7 @@ const PengajuanKAK = () => {
                 </button>
               </div>
             )}
-            
+
             {/* Tutup tombol umum */}
             <div className="absolute top-4 right-4">
               <button onClick={() => setIsDetailModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1 bg-gray-50 hover:bg-gray-100 rounded-full transition">
@@ -591,7 +594,7 @@ const PengajuanKAK = () => {
                   placeholder="Masukkan instruksi perbaikan untuk pengajuan ini..."
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
                   value={revisiData.catatan}
-                  onChange={(e) => setRevisiData({...revisiData, catatan: e.target.value})}
+                  onChange={(e) => setRevisiData({ ...revisiData, catatan: e.target.value })}
                 ></textarea>
               </div>
               <div className="flex justify-end gap-2">

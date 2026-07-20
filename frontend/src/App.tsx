@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Kementerian from "./pages/Kementerian";
 import PengajuanKAK from "./pages/PengajuanKAK";
 import Anggaran from "./pages/Anggaran";
+import Profile from "./pages/Profile";
 
 export default function App() {
   const [activeMenu, setActiveMenu] = useState("Overview"); // Default menu sesuai desain
@@ -29,6 +30,8 @@ export default function App() {
         return <Presensi />;
       case "Kementerian":
         return <Kementerian />;
+      case "Profil Saya":
+        return <Profile />;
       default:
         return (
           <div className="bg-white p-10 rounded-[40px] shadow-sm flex items-center justify-center h-96 border border-gray-100">
