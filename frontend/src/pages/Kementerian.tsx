@@ -26,7 +26,7 @@ export default function Kementerian() {
     totalStaff: 0,
     totalProker: 0,
   });
-  
+
   const [kementerianList, setKementerianList] = useState<KementerianData[]>([]);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
@@ -46,10 +46,10 @@ export default function Kementerian() {
         const kegiatan = kegiatanRes.data.data || kegiatanRes.data || [];
 
         const excludedRoles = [
-          "admin", 
-          "presiden bem", 
-          "wakil presiden bem", 
-          "bendahara", "bendahara 1", "bendahara 2", 
+          "admin",
+          "presiden bem",
+          "wakil presiden bem",
+          "bendahara", "bendahara 1", "bendahara 2",
           "sekretaris", "sekretaris 1", "sekretaris 2"
         ];
 
@@ -76,8 +76,8 @@ export default function Kementerian() {
           const menteriObj = usersInDivisi.find((u) => u.role?.toLowerCase().startsWith("menteri")) || null;
           const anggotaList = usersInDivisi.filter((u) => !u.role?.toLowerCase().startsWith("menteri"));
 
-          const prokerDivisi = kegiatan.filter((k: { divisi?: string; kementerian?: string }) => 
-            k.divisi?.toLowerCase() === namaKementerian.toLowerCase() || 
+          const prokerDivisi = kegiatan.filter((k: { divisi?: string; kementerian?: string }) =>
+            k.divisi?.toLowerCase() === namaKementerian.toLowerCase() ||
             k.kementerian?.toLowerCase() === namaKementerian.toLowerCase()
           );
 
@@ -89,7 +89,7 @@ export default function Kementerian() {
             anggota: anggotaList,
             staffCount: usersInDivisi.length,
             prokerCount: prokerDivisi.length,
-            anggaran: "Rp -", 
+            anggaran: "Rp -",
             status: "Aktif",
           };
         });
@@ -119,54 +119,46 @@ export default function Kementerian() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setTimeout(() => setSelectedKementerian(null), 200); 
+    setTimeout(() => setSelectedKementerian(null), 200);
   };
 
   return (
-    <div className="p-4 sm:p-8 font-sans text-gray-800">
-      
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Kementerian</h1>
-          <p className="text-gray-500 text-sm mt-1 font-medium">Kelola data kementerian dan struktur organisasi SIBEM.</p>
-        </div>
-      </div>
+    <div className="font-sans text-gray-800 space-y-4">
 
       {/* ================= STATISTIK DINAMIS (3 Kolom Sejajar) ================= */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5">
-        <Card 
+        <Card
           cardIndex={0}
-          title="Total Kementerian" 
-          value={isLoadingStats ? "..." : stats.totalKementerian.toString()} 
-          color="blue"
+          title="Total Kementerian"
+          value={isLoadingStats ? "..." : stats.totalKementerian.toString()}
+          color="orange"
           icon={
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-7 sm:h-7">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
             </svg>
-          } 
+          }
         />
-        <Card 
+        <Card
           cardIndex={1}
-          title="Total Pengurus" 
-          value={isLoadingStats ? "..." : stats.totalStaff.toString()} 
+          title="Total Pengurus"
+          value={isLoadingStats ? "..." : stats.totalStaff.toString()}
           color="orange"
           icon={
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-7 sm:h-7">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
             </svg>
-          } 
+          }
         />
-        <Card 
+        <Card
           cardIndex={2}
-          title="Total Program Kerja" 
-          value={isLoadingStats ? "..." : stats.totalProker.toString()} 
-          color="green"
+          title="Total Program Kerja"
+          value={isLoadingStats ? "..." : stats.totalProker.toString()}
+          color="orange"
           icon={
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-7 sm:h-7">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
             </svg>
-          } 
+          }
         />
       </div>
 
@@ -214,7 +206,7 @@ export default function Kementerian() {
                   </div>
                 </div>
 
-                <button 
+                <button
                   onClick={() => openDetailModal(item)}
                   className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all active:scale-95 flex items-center gap-1.5"
                 >
@@ -248,13 +240,13 @@ export default function Kementerian() {
       {isModalOpen && selectedKementerian && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-all">
           <div className="bg-white p-6 sm:p-8 rounded-[32px] shadow-2xl w-full max-w-xl relative animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
-            
+
             <div className="flex justify-between items-start mb-6 shrink-0">
               <div>
                 <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Kementerian {selectedKementerian.nama}</h2>
                 <p className="text-gray-500 text-sm mt-1 font-medium">Struktur Kepengurusan SIBEM</p>
               </div>
-              <button 
+              <button
                 onClick={closeModal}
                 className="text-gray-400 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-full p-2.5 transition-colors"
               >
@@ -265,7 +257,7 @@ export default function Kementerian() {
             </div>
 
             <div className="overflow-y-auto pr-2 pb-2 space-y-6">
-              
+
               <div>
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Menteri Kementerian</h3>
                 {selectedKementerian.menteriObj ? (
@@ -289,7 +281,7 @@ export default function Kementerian() {
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Jajaran Staff ({selectedKementerian.anggota.length})</h3>
                 </div>
-                
+
                 {selectedKementerian.anggota.length > 0 ? (
                   <div className="space-y-3">
                     {selectedKementerian.anggota.map((staff) => (
@@ -337,7 +329,7 @@ function Card({
     orange: "bg-orange-50 text-orange-600 border-orange-100",
     green: "bg-green-50 text-green-600 border-green-100",
   };
-  
+
   const iconColors = {
     blue: "text-blue-500",
     orange: "text-orange-500",
@@ -345,7 +337,7 @@ function Card({
   };
 
   const bgDecorationColor = colorStyles[color].split(" ")[0];
-  
+
   // Watermark styling based on index (to alternate top-left and bottom-right like overview)
   let watermarkClass = "absolute -right-4 -bottom-4 rotate-[-15deg]";
   if (cardIndex === 1) {
@@ -368,7 +360,7 @@ function Card({
 
   return (
     <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-white shadow-sm border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300 hover:-translate-y-1 group cursor-default p-4 sm:p-6 h-32 md:h-auto flex flex-col md:flex-row items-center md:items-center justify-center md:justify-start text-center md:text-left">
-      
+
       {/* MOBILE WATERMARK (Overview Style) */}
       <div className={`md:hidden ${watermarkClass} w-24 h-24 ${iconColors[color]} opacity-[0.07] pointer-events-none [&>svg]:w-full [&>svg]:h-full`}>
         {icon}
@@ -376,18 +368,18 @@ function Card({
 
       {/* DESKTOP BACKGROUND DECORATION (Original Style) */}
       <div className={`hidden md:block absolute -right-6 -top-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full opacity-50 transition-transform group-hover:scale-[1.8] duration-700 ease-out ${bgDecorationColor}`}></div>
-      
+
       <div className="relative flex flex-col md:flex-row items-center md:items-center gap-3 sm:gap-5 z-10 w-full md:w-auto">
         {/* DESKTOP BOXED ICON (Original Style) */}
         <div className={`hidden md:flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${colorStyles[color]} shadow-sm shrink-0`}>
           {icon}
         </div>
-        
+
         <div>
           <h2 className="text-4xl md:text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight leading-none md:leading-normal mb-1 md:mb-0">{value}</h2>
           <p className="text-xs sm:text-sm font-semibold text-gray-500 mt-0.5 sm:mt-1">
-             <span className="md:hidden">{formatTitleMobile(title)}</span>
-             <span className="hidden md:inline">{title}</span>
+            <span className="md:hidden">{formatTitleMobile(title)}</span>
+            <span className="hidden md:inline">{title}</span>
           </p>
         </div>
       </div>

@@ -47,7 +47,7 @@ const getStatusStyle = (status: string) => {
   if (status === 'verifikasi_sekjen' || status === 'Proses') return "bg-orange-50 text-orange-700 ring-orange-600/20";
   if (status === 'draft' || status === 'pending' || status === 'Belum Diajukan' || status === 'Menunggu') return "bg-amber-50 text-amber-700 ring-amber-600/20";
   if (status === 'ditolak' || status === 'Ditolak') return "bg-red-50 text-red-700 ring-red-600/20";
-  
+
   return "bg-gray-50 text-gray-700 ring-gray-600/20";
 };
 
@@ -56,7 +56,7 @@ const getStatusDot = (status: string) => {
   if (status === 'verifikasi_sekjen' || status === 'Proses') return "bg-orange-500";
   if (status === 'draft' || status === 'pending' || status === 'Belum Diajukan' || status === 'Menunggu') return "bg-amber-500";
   if (status === 'ditolak' || status === 'Ditolak') return "bg-red-500";
-  
+
   return "bg-gray-500";
 };
 
@@ -120,7 +120,7 @@ export default function Laporan() {
   // 1. Filter Data
   const filteredData = dataLaporan.filter((item) => {
     // a. Filter Search (Keyword)
-    const keywordMatch = 
+    const keywordMatch =
       item.namaKegiatan.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       item.kementerian.toLowerCase().includes(searchKeyword.toLowerCase());
 
@@ -172,50 +172,50 @@ export default function Laporan() {
       doc.text("BADAN EKSEKUTIF MAHASISWA", 115, 16, { align: "center" });
       doc.setFontSize(13);
       doc.text("UNIVERSITAS INTERNASIONAL SEMEN INDONESIA", 115, 22, { align: "center" });
-      
+
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.text("Sekretariat: Gedung Pusat Kegiatan Mahasiswa (PKM) Lt. 2", 115, 27, { align: "center" });
       doc.text("Email: bem@kampus.ac.id | Website: www.bem.kampus.ac.id", 115, 32, { align: "center" });
-    
-    // Garis Pemisah (Divider)
-    doc.setLineWidth(0.5);
-    doc.line(14, 35, 196, 35);
-    
-    // Judul Laporan
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("LAPORAN DATA PROKER DAN ANGGARAN SIBEM", 105, 45, { align: "center" });
-    
-    // Info Tambahan
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Dicetak pada : ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 53);
-    
-    // Data Tabel PDF
-    const tableData = filteredData.map((item, index) => [
-      index + 1,
-      item.namaKegiatan,
-      item.kementerian,
-      item.tanggal ? formatTanggal(item.tanggal) : '-',
-      item.statusKak,
-      formatRupiah(item.anggaran),
-      item.statusLaporan
-    ]);
 
-    autoTable(doc, {
-      startY: 57,
-      head: [['No', 'Kegiatan', 'Kementerian', 'Tanggal', 'Status KAK', 'Anggaran', 'Status LPJ']],
-      body: tableData,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 3 },
-      headStyles: { fillColor: [234, 88, 12], textColor: 255, fontStyle: 'bold' }, // bg-orange-600
-      alternateRowStyles: { fillColor: [249, 250, 251] }, // bg-gray-50
-    });
+      // Garis Pemisah (Divider)
+      doc.setLineWidth(0.5);
+      doc.line(14, 35, 196, 35);
+
+      // Judul Laporan
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("LAPORAN DATA PROKER DAN ANGGARAN SIBEM", 105, 45, { align: "center" });
+
+      // Info Tambahan
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Dicetak pada : ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 53);
+
+      // Data Tabel PDF
+      const tableData = filteredData.map((item, index) => [
+        index + 1,
+        item.namaKegiatan,
+        item.kementerian,
+        item.tanggal ? formatTanggal(item.tanggal) : '-',
+        item.statusKak,
+        formatRupiah(item.anggaran),
+        item.statusLaporan
+      ]);
+
+      autoTable(doc, {
+        startY: 57,
+        head: [['No', 'Kegiatan', 'Kementerian', 'Tanggal', 'Status KAK', 'Anggaran', 'Status LPJ']],
+        body: tableData,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 3 },
+        headStyles: { fillColor: [234, 88, 12], textColor: 255, fontStyle: 'bold' }, // bg-orange-600
+        alternateRowStyles: { fillColor: [249, 250, 251] }, // bg-gray-50
+      });
 
       doc.save("Laporan_Resmi_SIBEM.pdf");
     };
-    
+
     // Fallback if image fails to load
     img.onerror = () => {
       // Sama seperti onload namun tanpa logo
@@ -224,19 +224,19 @@ export default function Laporan() {
       doc.text("BADAN EKSEKUTIF MAHASISWA", 105, 16, { align: "center" });
       doc.setFontSize(13);
       doc.text("UNIVERSITAS INTERNASIONAL SEMEN INDONESIA", 105, 22, { align: "center" });
-      
+
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.text("Sekretariat: Gedung Pusat Kegiatan Mahasiswa (PKM) Lt. 2", 105, 27, { align: "center" });
       doc.text("Email: bem@kampus.ac.id | Website: www.bem.kampus.ac.id", 105, 32, { align: "center" });
-      
+
       doc.setLineWidth(0.5);
       doc.line(14, 35, 196, 35);
-      
+
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.text("LAPORAN DATA PROKER DAN ANGGARAN SIBEM", 105, 45, { align: "center" });
-      
+
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.text(`Dicetak pada : ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, 14, 53);
@@ -272,21 +272,21 @@ export default function Laporan() {
       value: ringkasan.pengajuanKak,
       note: "KAK telah diajukan",
       icon: FileText,
-      iconStyle: "bg-amber-50 text-amber-600",
+      iconStyle: "bg-orange-50 text-orange-600",
     },
     {
       label: "Total Anggaran",
       value: ringkasan.totalAnggaran,
       note: "Akumulasi anggaran",
       icon: Banknote,
-      iconStyle: "bg-emerald-50 text-emerald-600",
+      iconStyle: "bg-orange-50 text-orange-600",
     },
     {
       label: "Jumlah Kementerian",
       value: ringkasan.jumlahKementerian,
       note: "Kementerian terdaftar",
       icon: Building2,
-      iconStyle: "bg-violet-50 text-violet-600",
+      iconStyle: "bg-orange-50 text-orange-600",
     },
   ];
 
@@ -294,173 +294,164 @@ export default function Laporan() {
     <>
       {/* TAMPILAN APLIKASI (Disembunyikan saat fitur cetak dipanggil) */}
       <div className="space-y-4 print:hidden">
-      {/* Judul dan tombol aksi */}
-      <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-800">
-            Laporan SIBEM
-          </h1>
-          <p className="mt-1 text-sm text-gray-500 md:text-base">
-            Ringkasan data kegiatan, pengajuan KAK, anggaran, dan kementerian.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
-          >
-            <Printer size={16} />
-            Cetak Laporan
-          </button>
-
-          <button
-            type="button"
-            onClick={handleExportPDF}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto"
-          >
-            <FileDown size={16} />
-            Export PDF
-          </button>
-        </div>
-      </section>
-
-      {/* Ringkasan */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {ringkasanCards.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <article
-              key={item.label}
-              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        {/* Judul dan tombol aksi */}
+        <div className="flex justify-end items-center mb-6">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">
-                    {item.label}
-                  </p>
-                  <p className="mt-2 text-2xl font-bold text-gray-800">
-                    {item.value}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-400">{item.note}</p>
-                </div>
+              <Printer size={16} />
+              Cetak Laporan
+            </button>
 
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.iconStyle}`}
-                >
-                  <Icon size={21} />
-                </div>
-              </div>
-            </article>
-          );
-        })}
-      </section>
+            <button
+              type="button"
+              onClick={handleExportPDF}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto"
+            >
+              <FileDown size={16} />
+              Export PDF
+            </button>
+          </div>
+        </div>
 
-      {/* Filter */}
-      <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-[220px_240px_1fr]">
-          <div className="relative">
-            <CalendarDays
-              size={17}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+        {/* Ringkasan */}
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {ringkasanCards.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <article
+                key={item.label}
+                className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">
+                      {item.label}
+                    </p>
+                    <p className="mt-2 text-2xl font-bold text-gray-800">
+                      {item.value}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">{item.note}</p>
+                  </div>
+
+                  <div
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.iconStyle}`}
+                  >
+                    <Icon size={21} />
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+
+        {/* Filter */}
+        <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-[220px_240px_1fr]">
+            <div className="relative">
+              <CalendarDays
+                size={17}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <select
+                aria-label="Pilih periode laporan"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              >
+                <option value="">Semua Periode</option>
+                <option value="01">Januari 2026</option>
+                <option value="02">Februari 2026</option>
+                <option value="03">Maret 2026</option>
+                <option value="04">April 2026</option>
+                <option value="05">Mei 2026</option>
+                <option value="06">Juni 2026</option>
+                <option value="07">Juli 2026</option>
+                <option value="08">Agustus 2026</option>
+                <option value="09">September 2026</option>
+                <option value="10">Oktober 2026</option>
+                <option value="11">November 2026</option>
+                <option value="12">Desember 2026</option>
+              </select>
+            </div>
+
             <select
-              aria-label="Pilih periode laporan"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              aria-label="Pilih status laporan"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             >
-              <option value="">Semua Periode</option>
-              <option value="01">Januari 2026</option>
-              <option value="02">Februari 2026</option>
-              <option value="03">Maret 2026</option>
-              <option value="04">April 2026</option>
-              <option value="05">Mei 2026</option>
-              <option value="06">Juni 2026</option>
-              <option value="07">Juli 2026</option>
-              <option value="08">Agustus 2026</option>
-              <option value="09">September 2026</option>
-              <option value="10">Oktober 2026</option>
-              <option value="11">November 2026</option>
-              <option value="12">Desember 2026</option>
+              <option value="">Semua Status</option>
+              <option value="Belum Diajukan">Belum Diajukan</option>
+              <option value="pending">Pending</option>
+              <option value="verifikasi_sekjen">Verifikasi Sekjen</option>
+              <option value="disetujui">Disetujui</option>
+              <option value="ditolak">Ditolak</option>
             </select>
+
+            <div className="relative md:col-span-2 xl:col-span-1">
+              <Search
+                size={18}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                type="search"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                placeholder="Cari kegiatan atau kementerian..."
+                className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              />
+            </div>
           </div>
+        </section>
 
-          <select
-            aria-label="Pilih status laporan"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-600 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-          >
-            <option value="">Semua Status LPJ</option>
-            <option value="Belum Diajukan">Belum Diajukan</option>
-            <option value="pending">Pending</option>
-            <option value="verifikasi_sekjen">Verifikasi Sekjen</option>
-            <option value="disetujui">Disetujui</option>
-            <option value="ditolak">Ditolak</option>
-          </select>
-
-          <div className="relative md:col-span-2 xl:col-span-1">
-            <Search
-              size={18}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="search"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="Cari kegiatan atau kementerian..."
-              className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Tabel laporan */}
-      <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <div className="flex flex-col gap-1 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-bold text-gray-800">Daftar Laporan Kegiatan</h2>
-            <p className="mt-0.5 text-xs text-gray-400">
-              Menampilkan {filteredData.length} data laporan
+        {/* Tabel laporan */}
+        <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="flex flex-col gap-1 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-bold text-gray-800">Daftar Laporan Kegiatan</h2>
+              <p className="mt-0.5 text-xs text-gray-400">
+                Menampilkan {filteredData.length} data laporan
+              </p>
+            </div>
+            <p className="mt-2 text-xs text-gray-400 sm:mt-0">
+              Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
-          <p className="mt-2 text-xs text-gray-400 sm:mt-0">
-            Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-          </p>
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1050px] text-left">
-            <thead className="border-b border-gray-100 bg-gray-50/80">
-              <tr>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  No
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Kegiatan
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Tanggal
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Status KAK
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Anggaran
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Status Laporan
-                </th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1050px] text-left">
+              <thead className="border-b border-gray-100 bg-gray-50/80">
+                <tr>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    No
+                  </th>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Kegiatan
+                  </th>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Tanggal
+                  </th>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Status KAK
+                  </th>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Anggaran
+                  </th>
+                  <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Status Laporan
+                  </th>
+                  <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-gray-500">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
 
-            <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100">
                 {isLoading ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-500">
@@ -469,8 +460,15 @@ export default function Laporan() {
                   </tr>
                 ) : filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-sm text-gray-500">
-                      Tidak ada data laporan yang cocok dengan filter.
+                    <td colSpan={7} className="px-4 py-16 text-center text-sm text-gray-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 mb-4 bg-gray-50 rounded-full flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <p className="font-medium text-gray-600">Tidak ada data laporan yang cocok dengan filter.</p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -509,37 +507,37 @@ export default function Laporan() {
                   ))
                 )}
               </tbody>
-          </table>
-        </div>
-
-        <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-gray-400">
-            Menampilkan {currentData.length > 0 ? startIndex + 1 : 0} hingga {startIndex + currentData.length} dari {filteredData.length} entri
-          </p>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:text-gray-400 disabled:hover:bg-transparent disabled:cursor-not-allowed"
-            >
-              Sebelumnya
-            </button>
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-600 text-xs font-semibold text-white">
-              {currentPage}
-            </span>
-            <button
-              type="button"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:text-gray-400 disabled:hover:bg-transparent disabled:cursor-not-allowed"
-            >
-              Berikutnya
-            </button>
+            </table>
           </div>
-        </div>
-      </section>
+
+          <div className="flex flex-col gap-2 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-gray-400">
+              Menampilkan {currentData.length > 0 ? startIndex + 1 : 0} hingga {startIndex + currentData.length} dari {filteredData.length} entri
+            </p>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:text-gray-400 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+              >
+                Sebelumnya
+              </button>
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-600 text-xs font-semibold text-white">
+                {currentPage}
+              </span>
+              <button
+                type="button"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50 disabled:text-gray-400 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+              >
+                Berikutnya
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* TEMPLATE KHUSUS CETAK LAPORAN (Hanya terlihat saat print) */}
@@ -551,11 +549,11 @@ export default function Laporan() {
         }
       `}</style>
       <div className="hidden print:block w-full text-black bg-white print:p-[2cm]">
-        
+
         {/* KOP SURAT */}
         <div className="border-b-[3px] border-black pb-4 mb-4 flex items-center justify-between">
           <div className="w-24 flex justify-center">
-             <img src={logoBem} alt="Logo BEM" className="w-20 h-auto object-contain" />
+            <img src={logoBem} alt="Logo BEM" className="w-20 h-auto object-contain" />
           </div>
           <div className="flex-1 text-center px-2">
             <h1 className="text-xl font-bold uppercase tracking-wide leading-tight">Badan Eksekutif Mahasiswa</h1>
@@ -564,7 +562,7 @@ export default function Laporan() {
             <p className="text-sm leading-tight">Email: bem@kampus.ac.id | Website: www.bem.kampus.ac.id</p>
           </div>
           <div className="w-24">
-             {/* Spasi untuk menyeimbangkan flexbox */}
+            {/* Spasi untuk menyeimbangkan flexbox */}
           </div>
         </div>
 
@@ -575,7 +573,7 @@ export default function Laporan() {
         <div className="flex justify-end mb-4 text-sm font-medium">
           <p>Tanggal Cetak: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
-        
+
         <table className="w-full border-collapse border border-black text-sm text-left">
           <thead>
             <tr>

@@ -44,10 +44,6 @@ const Proker = () => {
     tanggal_pelaksanaan: "",
   });
 
-  useEffect(() => {
-    fetchProkers();
-  }, []);
-
   // PERUBAHAN 1: Tambahkan parameter 'silent' agar saat nambah/edit data, tabel tidak nge-blank loading
   const fetchProkers = async (silent = false) => {
     if (!silent) setIsFetching(true);
@@ -63,6 +59,10 @@ const Proker = () => {
       if (!silent) setIsFetching(false);
     }
   };
+
+  useEffect(() => {
+    fetchProkers();
+  }, []);
 
   const handleAddClick = () => {
     setFormData({
@@ -111,7 +111,7 @@ const Proker = () => {
 
       setIsModalOpen(false);
       // PERUBAHAN 2: Fetch data diam-diam tanpa merubah isFetching jadi true
-      fetchProkers(true); 
+      fetchProkers(true);
     } catch (error) {
       console.error("Gagal menyimpan proker:", error);
       alert("Terjadi kesalahan saat menyimpan data.");
@@ -165,7 +165,7 @@ const Proker = () => {
   // PERUBAHAN 4: Optimistic Update untuk Hapus Data
   const confirmDelete = async () => {
     if (deleteTargetId === null) return;
-    
+
     const targetId = deleteTargetId;
     const dataSebelumnya = [...daftarKegiatan];
 
@@ -226,24 +226,16 @@ const Proker = () => {
 
   return (
     <div className="space-y-4 relative">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Manajemen Program Kerja
-          </h1>
-          <p className="text-gray-500 text-sm md:text-base mt-1">
-            Kelola pengajuan dan pelaksanaan proker himpunan.
-          </p>
-        </div>
-        {isMenteri && (
+      {isMenteri && (
+        <div className="flex justify-end items-center mb-4">
           <button
             onClick={handleAddClick}
-            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition shadow-sm font-medium w-full sm:w-auto text-sm"
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
           >
-            + Tambah Proker
+            {activeTab === 'Proker' ? '+ Tambah Program Kerja' : '+ Tambah Kepanitiaan'}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -300,7 +292,7 @@ const Proker = () => {
                       {formatTanggal(kegiatan.tanggal_pelaksanaan)}
                     </td>
                     <td className="px-4 py-2">
-                      { (isBPH || kegiatan.divisi === userDivisi) ? (
+                      {(isBPH || kegiatan.divisi === userDivisi) ? (
                         <span
                           className={`px-2 py-1 rounded-md text-[11px] font-medium ${getStatusColor(kegiatan.status)}`}
                         >
@@ -311,51 +303,58 @@ const Proker = () => {
                       )}
                     </td>
                     {hasActionColumn && (
-                    <td className="px-4 py-2 flex justify-center gap-2">
-                      {isPresbem && kegiatan.status === 'pending' && (
-                        <>
-                          <button 
-                            onClick={() => handleStatusChange(kegiatan, 'disetujui')}
-                            className="text-green-700 bg-green-100 hover:bg-green-200 text-xs font-bold px-2 py-1 rounded-md transition"
-                            title="Setujui Proker"
-                          >
-                            ACC
-                          </button>
-                          <button 
-                            onClick={() => handleStatusChange(kegiatan, 'ditolak')}
-                            className="text-orange-700 bg-orange-100 hover:bg-orange-200 text-xs font-bold px-2 py-1 rounded-md transition"
-                            title="Tolak Proker"
-                          >
-                            TOLAK
-                          </button>
-                        </>
-                      )}
-                      
-                      {kegiatan.user_id === userId && (
-                        <>
-                          <button
-                            onClick={() => handleEditClick(kegiatan)}
-                            className="text-orange-600 hover:text-orange-800 text-sm font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md transition"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(kegiatan.id)}
-                            className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition"
-                          >
-                            Hapus
-                          </button>
-                        </>
-                      )}
-                    </td>
+                      <td className="px-4 py-2 flex justify-center gap-2">
+                        {isPresbem && kegiatan.status === 'pending' && (
+                          <>
+                            <button
+                              onClick={() => handleStatusChange(kegiatan, 'disetujui')}
+                              className="text-green-700 bg-green-100 hover:bg-green-200 text-xs font-bold px-2 py-1 rounded-md transition"
+                              title="Setujui Proker"
+                            >
+                              ACC
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange(kegiatan, 'ditolak')}
+                              className="text-orange-700 bg-orange-100 hover:bg-orange-200 text-xs font-bold px-2 py-1 rounded-md transition"
+                              title="Tolak Proker"
+                            >
+                              TOLAK
+                            </button>
+                          </>
+                        )}
+
+                        {kegiatan.user_id === userId && (
+                          <>
+                            <button
+                              onClick={() => handleEditClick(kegiatan)}
+                              className="text-orange-600 hover:text-orange-800 text-sm font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md transition"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(kegiatan.id)}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition"
+                            >
+                              Hapus
+                            </button>
+                          </>
+                        )}
+                      </td>
                     )}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={hasActionColumn ? 6 : 5} className="p-4 text-center text-gray-500">
-                    Belum ada data program kerja.
-                  </td>
+                    <td colSpan={6} className="px-6 py-16 text-center text-gray-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 mb-4 bg-gray-50 rounded-full flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </div>
+                        <p className="font-medium text-gray-600">Belum ada data program kerja.</p>
+                      </div>
+                    </td>
                 </tr>
               )}
             </tbody>
@@ -512,7 +511,7 @@ const Proker = () => {
               <h2 className="text-xl font-bold text-gray-800">
                 Detail Program Kerja
               </h2>
-              <button 
+              <button
                 onClick={() => setIsDetailModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
@@ -527,7 +526,7 @@ const Proker = () => {
                 <h3 className="text-sm font-medium text-gray-500">Nama Kegiatan</h3>
                 <p className="text-base font-semibold text-gray-800 mt-1">{selectedProker.nama_proker}</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Kementerian</h3>

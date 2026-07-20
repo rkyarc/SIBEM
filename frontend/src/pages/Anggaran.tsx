@@ -22,7 +22,7 @@ const Anggaran = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
-  
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
@@ -91,7 +91,7 @@ const Anggaran = () => {
 
     try {
       const token = localStorage.getItem("token");
-      
+
       const payload = new FormData();
       payload.append("nama_kegiatan", formData.nama_kegiatan);
       payload.append("divisi", formData.divisi);
@@ -99,7 +99,7 @@ const Anggaran = () => {
       payload.append("jumlah", formData.jumlah);
       payload.append("tanggal", formData.tanggal);
       if (formData.keterangan) payload.append("keterangan", formData.keterangan);
-      
+
       if (selectedFile) {
         payload.append("bukti_file", selectedFile);
       }
@@ -159,7 +159,7 @@ const Anggaran = () => {
 
   const confirmDelete = async () => {
     if (deleteTargetId === null) return;
-    
+
     const targetId = deleteTargetId;
     const dataSebelumnya = [...daftarAnggaran];
 
@@ -214,18 +214,10 @@ const Anggaran = () => {
 
   return (
     <div className="space-y-4 relative">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Manajemen Anggaran
-          </h1>
-          <p className="text-gray-500 text-sm md:text-base mt-1">
-            Kelola pengajuan, pemasukan, dan pengeluaran anggaran himpunan.
-          </p>
-        </div>
+      <div className="flex justify-end items-center mb-4">
         <button
           onClick={handleAddClick}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm font-medium w-full sm:w-auto"
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
         >
           + Ajukan Anggaran
         </button>
@@ -233,24 +225,24 @@ const Anggaran = () => {
 
       {/* Ringkasan Anggaran (Pagu Dana) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pemasukan</h3>
-            <p className="text-2xl font-bold text-green-600">
-               {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
-            </p>
-         </div>
-         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pengeluaran (Disetujui)</h3>
-            <p className="text-2xl font-bold text-red-500">
-               {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
-            </p>
-         </div>
-         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
-            <h3 className="text-gray-500 text-sm font-medium mb-1">Menunggu Validasi</h3>
-            <p className="text-2xl font-bold text-yellow-600">
-               {daftarAnggaran.filter(a => a.status === 'pending' || a.status === 'verifikasi_sekjen').length} Pengajuan
-            </p>
-         </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pemasukan</h3>
+          <p className="text-2xl font-bold text-green-600">
+            {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
+          </p>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pengeluaran (Disetujui)</h3>
+          <p className="text-2xl font-bold text-red-500">
+            {formatRupiah(daftarAnggaran.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0))}
+          </p>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Menunggu Validasi</h3>
+          <p className="text-2xl font-bold text-yellow-600">
+            {daftarAnggaran.filter(a => a.status === 'pending' || a.status === 'verifikasi_sekjen').length} Pengajuan
+          </p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -286,7 +278,7 @@ const Anggaran = () => {
                     <td className="px-4 py-2 text-sm text-gray-600">{anggaran.divisi}</td>
                     <td className="px-4 py-2 text-sm">
                       <span className={`px-2 py-1 rounded text-[11px] font-semibold ${anggaran.jenis === 'pemasukan' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                         {anggaran.jenis.toUpperCase()}
+                        {anggaran.jenis.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-sm font-bold text-gray-800">{formatRupiah(anggaran.jumlah)}</td>
@@ -299,45 +291,45 @@ const Anggaran = () => {
                     <td className="px-4 py-2 flex justify-center gap-2">
                       {/* Tombol Approval Berjenjang */}
                       {(isSekjen && anggaran.status === 'pending') && (
-                          <button 
-                             onClick={() => handleStatusChange(anggaran, 'verifikasi_sekjen')}
-                             className="text-white bg-orange-500 hover:bg-orange-600 text-xs font-bold px-2 py-1 rounded-md transition"
-                             title="Verifikasi Tahap 1"
-                          >
-                             Verifikasi
-                          </button>
+                        <button
+                          onClick={() => handleStatusChange(anggaran, 'verifikasi_sekjen')}
+                          className="text-white bg-orange-500 hover:bg-orange-600 text-xs font-bold px-2 py-1 rounded-md transition"
+                          title="Verifikasi Tahap 1"
+                        >
+                          Verifikasi
+                        </button>
                       )}
-                      
+
                       {(isPresbem && anggaran.status === 'verifikasi_sekjen') && (
-                          <button 
-                             onClick={() => handleStatusChange(anggaran, 'disetujui')}
-                             className="text-white bg-green-500 hover:bg-green-600 text-xs font-bold px-2 py-1 rounded-md transition"
-                             title="Persetujuan Akhir"
-                          >
-                             ACC Final
-                          </button>
+                        <button
+                          onClick={() => handleStatusChange(anggaran, 'disetujui')}
+                          className="text-white bg-green-500 hover:bg-green-600 text-xs font-bold px-2 py-1 rounded-md transition"
+                          title="Persetujuan Akhir"
+                        >
+                          ACC Final
+                        </button>
                       )}
 
                       {anggaran.bukti_file && (
-                          <a 
-                             href={anggaran.bukti_file}
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="text-blue-600 hover:text-blue-800 text-xs font-bold px-2 py-1 rounded-md border border-blue-200 bg-blue-50 hover:bg-blue-100 transition"
-                             title="Lihat Kuitansi"
-                          >
-                             Lihat Kuitansi
-                          </a>
+                        <a
+                          href={anggaran.bukti_file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-xs font-bold px-2 py-1 rounded-md border border-blue-200 bg-blue-50 hover:bg-blue-100 transition"
+                          title="Lihat Kuitansi"
+                        >
+                          Lihat Kuitansi
+                        </a>
                       )}
 
                       {/* Tolak bisa dilakukan oleh Sekjen (saat pending) atau Presbem (saat verif) */}
                       {((isSekjen && anggaran.status === 'pending') || (isPresbem && anggaran.status === 'verifikasi_sekjen')) && (
-                          <button 
-                             onClick={() => handleStatusChange(anggaran, 'ditolak')}
-                             className="text-white bg-red-500 hover:bg-red-600 text-xs font-bold px-2 py-1 rounded-md transition"
-                          >
-                             Tolak
-                          </button>
+                        <button
+                          onClick={() => handleStatusChange(anggaran, 'ditolak')}
+                          className="text-white bg-red-500 hover:bg-red-600 text-xs font-bold px-2 py-1 rounded-md transition"
+                        >
+                          Tolak
+                        </button>
                       )}
 
                       <button onClick={() => handleEditClick(anggaran)} className="text-orange-600 hover:text-orange-800 text-sm font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md transition">Edit</button>
@@ -347,9 +339,16 @@ const Anggaran = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="p-4 text-center text-gray-500">
-                    Belum ada data anggaran.
-                  </td>
+                    <td colSpan={7} className="px-6 py-16 text-center text-gray-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 mb-4 bg-gray-50 rounded-full flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <p className="font-medium text-gray-600">Belum ada data anggaran.</p>
+                      </div>
+                    </td>
                 </tr>
               )}
             </tbody>
@@ -372,35 +371,35 @@ const Anggaran = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Divisi/Kementerian <span className="text-red-500">*</span></label>
-                   <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.divisi} onChange={(e) => setFormData({ ...formData, divisi: e.target.value })}>
-                     <option value="" disabled>-- Pilih --</option>
-                     <option value="Kastrat">Kastrat</option>
-                     <option value="Risil">Risil</option>
-                     <option value="Kominfo">Kominfo</option>
-                     <option value="Sosmas">Sosmas</option>
-                     <option value="PSDM">PSDM</option>
-                   </select>
-                 </div>
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Jenis <span className="text-red-500">*</span></label>
-                   <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.jenis} onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}>
-                     <option value="pengeluaran">Pengeluaran (Ajukan)</option>
-                     <option value="pemasukan">Pemasukan (Lapor)</option>
-                   </select>
-                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Divisi/Kementerian <span className="text-red-500">*</span></label>
+                  <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.divisi} onChange={(e) => setFormData({ ...formData, divisi: e.target.value })}>
+                    <option value="" disabled>-- Pilih --</option>
+                    <option value="Kastrat">Kastrat</option>
+                    <option value="Risil">Risil</option>
+                    <option value="Kominfo">Kominfo</option>
+                    <option value="Sosmas">Sosmas</option>
+                    <option value="PSDM">PSDM</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Jenis <span className="text-red-500">*</span></label>
+                  <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.jenis} onChange={(e) => setFormData({ ...formData, jenis: e.target.value })}>
+                    <option value="pengeluaran">Pengeluaran (Ajukan)</option>
+                    <option value="pemasukan">Pemasukan (Lapor)</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp) <span className="text-red-500">*</span></label>
-                   <input type="number" min="0" required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.jumlah} onChange={(e) => setFormData({ ...formData, jumlah: e.target.value })} />
-                 </div>
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal <span className="text-red-500">*</span></label>
-                   <input type="date" required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} />
-                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp) <span className="text-red-500">*</span></label>
+                  <input type="number" min="0" required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.jumlah} onChange={(e) => setFormData({ ...formData, jumlah: e.target.value })} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal <span className="text-red-500">*</span></label>
+                  <input type="date" required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.tanggal} onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })} />
+                </div>
               </div>
 
               <div>
@@ -410,10 +409,10 @@ const Anggaran = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Unggah Kuitansi / Nota</label>
-                <input 
-                  type="file" 
-                  accept="image/*,application/pdf" 
-                  capture="environment" 
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  capture="environment"
                   className="w-full p-2 border border-gray-300 rounded-lg text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                   onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
                 />
@@ -422,7 +421,7 @@ const Anggaran = () => {
 
               <div className="flex justify-end gap-3 mt-6 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">Batal</button>
-                <button type="submit" disabled={isLoading} className="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg font-medium disabled:bg-green-300">{isLoading ? "Menyimpan..." : "Simpan"}</button>
+                <button type="submit" disabled={isLoading} className="px-4 py-2 text-white bg-orange-600 hover:bg-orange-700 rounded-lg font-medium disabled:bg-orange-300">{isLoading ? "Menyimpan..." : "Simpan"}</button>
               </div>
             </form>
           </div>
