@@ -27,7 +27,31 @@ class AnggaranController extends Controller
         ]);
 
         $data = $request->all();
+        $data['user_id'] = auth()->id();
+        if (!isset($data['status'])) $data['status'] = 'pending';
         
+        if ($request->jenis === 'pengeluaran') {
+            $pagu = \App\Models\Pagu::where('kementerian', $request->divisi)->first();
+            if (!$pagu) {
+                return response()->json([
+                    'message' => 'Gagal: Pagu anggaran untuk kementerian ini belum diatur.'
+                ], 400);
+            }
+
+            $totalTerpakai = Anggaran::where('divisi', $request->divisi)
+                ->where('jenis', 'pengeluaran')
+                ->whereIn('status', ['pending', 'verifikasi_sekjen', 'disetujui'])
+                ->sum('jumlah');
+
+            $sisaPagu = $pagu->pagu_awal - $totalTerpakai;
+
+            if ($request->jumlah > $sisaPagu) {
+                return response()->json([
+                    'message' => 'Gagal: Nominal melebihi sisa pagu kementerian (Sisa: Rp ' . number_format($sisaPagu, 0, ',', '.') . ')'
+                ], 400);
+            }
+        }
+
         if ($request->hasFile('bukti_file')) {
             $path = $request->file('bukti_file')->store('kuitansi', 'public');
             $data['bukti_file'] = url('storage/' . $path);
@@ -50,6 +74,14 @@ class AnggaranController extends Controller
         }
 
         $data = $request->all();
+        
+        // Cek jika Bendahara ACC dan nominal > 5.000.000
+        if (isset($data['status']) && $data['status'] === 'disetujui') {
+            $user = auth()->user();
+            if ($user && str_contains(strtolower($user->role), 'bendahara') && $anggaran->jumlah > 5000000) {
+                $data['status'] = 'menunggu_presiden';
+            }
+        }
         
         if ($request->hasFile('bukti_file')) {
             $path = $request->file('bukti_file')->store('kuitansi', 'public');

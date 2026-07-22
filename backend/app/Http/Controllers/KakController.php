@@ -12,7 +12,30 @@ class KakController extends Controller
      */
     public function index()
     {
-        $kaks = Kak::all();
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json([]);
+        }
+
+        $role = strtolower($user->role);
+        $isBPH = str_contains($role, 'presiden') || str_contains($role, 'wakil') || str_contains($role, 'bendahara') || str_contains($role, 'sekretaris');
+
+        if ($isBPH) {
+            $kaks = Kak::all();
+        } else {
+            // For Menteri and Staff, extract divisi from role (e.g., "Menteri PSDM" -> "psdm")
+            $parts = explode(' ', $role);
+            if (count($parts) > 1) {
+                array_shift($parts); // Remove "Menteri" or "Staff"
+                $divisi = strtolower(implode(' ', $parts));
+                $kaks = Kak::whereRaw('LOWER(divisi) = ?', [$divisi])->get();
+            } else {
+                // Fallback: only their own
+                $kaks = Kak::where('user_id', $user->id)->get();
+            }
+        }
+        
         return response()->json($kaks);
     }
 
@@ -50,7 +73,28 @@ class KakController extends Controller
             return response()->json(['message' => 'Pengajuan tidak ditemukan'], 404);
         }
 
+        $statusSebelumnya = $kak->status;
+        $statusBaru = $request->input('status', $kak->status);
+        $catatan = $request->input('catatan_revisi', null);
+        
         $kak->update($request->all());
+
+        // Jika ada perubahan status atau ada catatan (berarti direview), ATAU 
+        // Jika dokumen diupdate oleh pengaju setelah statusnya revisi
+        if ($statusSebelumnya != $statusBaru || $catatan) {
+            $catatanFinal = $catatan;
+            if ($statusSebelumnya === 'revisi' && $statusBaru === 'pending' && !$catatan) {
+                $catatanFinal = "Dokumen telah diperbarui oleh pengaju.";
+            }
+
+            \App\Models\KakRevision::create([
+                'kak_id' => $kak->id,
+                'user_id' => auth()->id(),
+                'status_sebelumnya' => $statusSebelumnya,
+                'status_baru' => $statusBaru,
+                'catatan' => $catatanFinal
+            ]);
+        }
 
         return response()->json([
             'message' => 'Pengajuan berhasil diperbarui!',
@@ -58,6 +102,14 @@ class KakController extends Controller
         ]);
     }
 
+    public function getRevisions($id)
+    {
+        $revisions = \App\Models\KakRevision::with('user')
+                        ->where('kak_id', $id)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        return response()->json($revisions);
+    }
     /**
      * Remove the specified resource from storage.
      */

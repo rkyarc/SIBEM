@@ -65,14 +65,23 @@ export default function Navbar({ activeMenu, onMenuClick, setActiveMenu }: Navba
     if (!user) return;
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/kak", {
+      
+      // Fetch KAK Revisions
+      const kakResponse = await axios.get("http://127.0.0.1:8000/api/kak", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Ambil data pengajuan milik user yang sedang login dan berstatus revisi
-      const userRevisions = response.data.filter((item: NotificationData) => {
+      const userRevisions = kakResponse.data.filter((item: NotificationData) => {
         return item.user_id === user.id && item.status?.toLowerCase().startsWith('revisi');
       });
-      setNotifications(userRevisions);
+
+      // Fetch Kas Rutin Notifications
+      const notifResponse = await axios.get("http://127.0.0.1:8000/api/notifications", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const userNotifs = notifResponse.data;
+
+      // Gabungkan dan set state
+      setNotifications([...userRevisions, ...userNotifs]);
     } catch (error) {
       console.error("Gagal mengambil data notifikasi:", error);
     }
@@ -155,19 +164,32 @@ export default function Navbar({ activeMenu, onMenuClick, setActiveMenu }: Navba
                   notifications.map((notif) => (
                     <button 
                       key={notif.id} 
-                      onClick={() => {
-                        if (setActiveMenu) {
+                      onClick={async () => {
+                        if ((notif as any).is_notification) {
+                          try {
+                            const token = localStorage.getItem("token");
+                            await axios.post(`http://127.0.0.1:8000/api/notifications/${notif.id}/read`, {}, {
+                              headers: { Authorization: `Bearer ${token}` }
+                            });
+                          } catch (e) {}
+                          if (setActiveMenu) setActiveMenu("Anggaran");
+                        } else if (setActiveMenu) {
                           localStorage.setItem('open_revisi_id', notif.id.toString());
                           localStorage.setItem('open_revisi_tab', notif.tipe_pengajuan || 'kak');
                           setActiveMenu("Pengajuan KAK LPJ");
-                          setIsNotificationOpen(false);
                         }
+                        setIsNotificationOpen(false);
+                        fetchNotifications();
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-orange-50 border-b border-gray-50 transition-colors flex flex-col gap-1"
                     >
                       <div className="flex justify-between items-start w-full gap-2">
                         <p className="text-sm font-bold text-gray-800 line-clamp-1">{notif.nama_kegiatan}</p>
-                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex-shrink-0 ${notif.tipe_pengajuan?.toLowerCase() === 'lpj' ? 'bg-indigo-100 text-indigo-700' : 'bg-orange-100 text-orange-700'}`}>
+                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex-shrink-0 ${
+                          notif.tipe_pengajuan?.toLowerCase() === 'lpj' ? 'bg-indigo-100 text-indigo-700' : 
+                          notif.tipe_pengajuan?.toLowerCase() === 'kas' ? 'bg-red-100 text-red-700' :
+                          'bg-orange-100 text-orange-700'
+                        }`}>
                           {notif.tipe_pengajuan || 'KAK'}
                         </span>
                       </div>

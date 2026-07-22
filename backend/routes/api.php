@@ -33,12 +33,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/kak', [KakController::class, 'store']);
     Route::put('/kak/{id}', [KakController::class, 'update']);
     Route::delete('/kak/{id}', [KakController::class, 'destroy']);
+    Route::get('/kak/{id}/revisions', [KakController::class, 'getRevisions']);
 
     // Rute untuk mengelola Anggaran
     Route::get('/anggaran', [\App\Http\Controllers\AnggaranController::class, 'index']);
     Route::post('/anggaran', [\App\Http\Controllers\AnggaranController::class, 'store']);
     Route::put('/anggaran/{id}', [\App\Http\Controllers\AnggaranController::class, 'update']);
     Route::delete('/anggaran/{id}', [\App\Http\Controllers\AnggaranController::class, 'destroy']);
+
+    // Rute untuk mengelola Kas Rutin
+    Route::get('/kas-rutin', [\App\Http\Controllers\KasRutinController::class, 'index']);
+    Route::post('/kas-rutin', [\App\Http\Controllers\KasRutinController::class, 'store']);
+    Route::put('/kas-rutin/{id}', [\App\Http\Controllers\KasRutinController::class, 'update']);
+    Route::delete('/kas-rutin/{id}', [\App\Http\Controllers\KasRutinController::class, 'destroy']);
+
+    // Rute untuk mengelola Pagu Anggaran
+    Route::get('/pagu', [\App\Http\Controllers\PaguController::class, 'index']);
+    Route::post('/pagu', [\App\Http\Controllers\PaguController::class, 'store']);
+
+    // Rute untuk Notifikasi
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
 
     // Rute untuk Laporan
     Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index']);

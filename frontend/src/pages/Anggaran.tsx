@@ -14,6 +14,19 @@ interface AnggaranData {
   status: string;
 }
 
+interface KasRutinData {
+  id: number;
+  nama: string;
+  nominal: number;
+  periode: string;
+  hari_mingguan: number | null;
+  tanggal_bulanan: number | null;
+  bulan_tahunan: number | null;
+  tanggal_tahunan: number | null;
+  tingkatan: string;
+  kementerian: string | null;
+}
+
 const Anggaran = () => {
   const [daftarAnggaran, setDaftarAnggaran] = useState<AnggaranData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,13 +49,23 @@ const Anggaran = () => {
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const [viewMode, setViewMode] = useState<"anggaran" | "pagu">("anggaran");
+  const [viewMode, setViewMode] = useState<"anggaran" | "kas" | "pagu">("anggaran");
   const [daftarPagu, setDaftarPagu] = useState<any[]>([]);
   const [formPagu, setFormPagu] = useState({ kementerian: "", nominal: "" });
+
+  // Kas Rutin state
+  const [daftarKasRutin, setDaftarKasRutin] = useState<KasRutinData[]>([]);
+  const [formKasRutin, setFormKasRutin] = useState({
+    nama: "", nominal: "", periode: "bulanan",
+    hari_mingguan: "", tanggal_bulanan: "", bulan_tahunan: "", tanggal_tahunan: "",
+  });
+  const [isEditKasRutin, setIsEditKasRutin] = useState(false);
+  const [editKasRutinId, setEditKasRutinId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchAnggarans();
     fetchPagu();
+    fetchKasRutin();
   }, []);
 
   async function fetchPagu() {
@@ -73,6 +96,83 @@ const Anggaran = () => {
     } catch (error) {
       console.error(error);
       alert("Gagal menyimpan alokasi pagu");
+    }
+  };
+
+  // Kas Rutin functions
+  async function fetchKasRutin() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://127.0.0.1:8000/api/kas-rutin", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDaftarKasRutin(response.data);
+    } catch (error) {
+      console.error("Gagal mengambil kas rutin:", error);
+    }
+  }
+
+  const handleSubmitKasRutin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const payload: any = {
+        nama: formKasRutin.nama,
+        nominal: formKasRutin.nominal,
+        periode: formKasRutin.periode,
+        tingkatan: isBendahara ? "Komunal" : "Kementerian",
+        kementerian: isBendahara ? null : userRole,
+      };
+      if (formKasRutin.periode === "mingguan") payload.hari_mingguan = formKasRutin.hari_mingguan;
+      if (formKasRutin.periode === "bulanan") payload.tanggal_bulanan = formKasRutin.tanggal_bulanan;
+      if (formKasRutin.periode === "tahunan") {
+        payload.bulan_tahunan = formKasRutin.bulan_tahunan;
+        payload.tanggal_tahunan = formKasRutin.tanggal_tahunan;
+      }
+
+      if (isEditKasRutin && editKasRutinId !== null) {
+        await axios.put(`http://127.0.0.1:8000/api/kas-rutin/${editKasRutinId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await axios.post("http://127.0.0.1:8000/api/kas-rutin", payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      setFormKasRutin({ nama: "", nominal: "", periode: "bulanan", hari_mingguan: "", tanggal_bulanan: "", bulan_tahunan: "", tanggal_tahunan: "" });
+      setIsEditKasRutin(false);
+      setEditKasRutinId(null);
+      fetchKasRutin();
+    } catch (error) {
+      console.error("Gagal menyimpan kas rutin:", error);
+      alert("Gagal menyimpan aturan kas rutin.");
+    }
+  };
+
+  const handleEditKasRutin = (kas: KasRutinData) => {
+    setFormKasRutin({
+      nama: kas.nama,
+      nominal: kas.nominal.toString(),
+      periode: kas.periode,
+      hari_mingguan: kas.hari_mingguan?.toString() || "",
+      tanggal_bulanan: kas.tanggal_bulanan?.toString() || "",
+      bulan_tahunan: kas.bulan_tahunan?.toString() || "",
+      tanggal_tahunan: kas.tanggal_tahunan?.toString() || "",
+    });
+    setIsEditKasRutin(true);
+    setEditKasRutinId(kas.id);
+  };
+
+  const handleDeleteKasRutin = async (id: number) => {
+    if (!confirm("Yakin ingin menghapus aturan kas rutin ini?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://127.0.0.1:8000/api/kas-rutin/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchKasRutin();
+    } catch (error) {
+      console.error("Gagal menghapus kas rutin:", error);
     }
   };
 
@@ -248,18 +348,61 @@ const Anggaran = () => {
   const isSekjen = userRole === "sekjen";
   const isPresbem = userRole === "presbem";
   const isBendahara = userRole.toLowerCase().includes("bendahara");
+  const isKementerian = ["Kastrat", "Risil", "Kominfo", "Sosmas", "PSDM"].includes(userRole);
+
+  // Filter kas rutin berdasarkan role
+  const getDepartment = (role: string) => {
+    const depts = ["advokesma", "kominfo", "psdm", "sosmas", "ekraf", "kastrat", "dagri", "risil"];
+    const lowerRole = role.toLowerCase();
+    for (const dept of depts) {
+      if (lowerRole.includes(dept)) return dept;
+    }
+    return null;
+  };
+  const userDept = getDepartment(userRole);
+  const filteredKasRutin = daftarKasRutin.filter((kas) => {
+    if (kas.tingkatan === "Komunal") return true;
+    if (userRole.toLowerCase().includes("admin") || userRole.toLowerCase().includes("presiden") || userRole.toLowerCase().includes("sekretaris") || userRole.toLowerCase().includes("bendahara")) return true;
+    if (kas.kementerian) {
+      const kasDept = getDepartment(kas.kementerian);
+      return kasDept && kasDept === userDept;
+    }
+    return false;
+  });
 
   return (
     <div className="space-y-4 relative">
-      <div className="flex justify-end items-center mb-4 gap-3">
-        {isBendahara && (
+      <div className="flex flex-wrap justify-end items-center mb-4 gap-3">
+        {/* Tombol toggle Kas Rutin */}
+        <button
+          onClick={() => setViewMode(viewMode === "kas" ? "anggaran" : "kas")}
+          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm font-medium w-full sm:w-auto"
+        >
+          {viewMode === "kas" ? (
+            <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Kembali ke Anggaran</>
+          ) : (
+            <><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Pengaturan Kas Rutin</>
+          )}
+        </button>
+
+        {/* Tombol toggle Pagu (hanya Bendahara) */}
+        {isBendahara && viewMode === "anggaran" && (
           <button
-            onClick={() => setViewMode(viewMode === "anggaran" ? "pagu" : "anggaran")}
+            onClick={() => setViewMode("pagu")}
             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium w-full sm:w-auto"
           >
-            {viewMode === "pagu" ? "Kembali ke Anggaran" : "Alokasi Pagu Kementerian"}
+            Alokasi Pagu Kementerian
           </button>
         )}
+        {viewMode === "pagu" && (
+          <button
+            onClick={() => setViewMode("anggaran")}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium w-full sm:w-auto"
+          >
+            Kembali ke Anggaran
+          </button>
+        )}
+
         {viewMode === "anggaran" && (
           <button
             onClick={handleAddClick}
@@ -494,6 +637,115 @@ const Anggaran = () => {
                         <p className="text-lg font-bold text-indigo-600">{formatRupiah(pagu.pagu_awal)}</p>
                         <button onClick={() => setFormPagu({ kementerian: pagu.kementerian, nominal: pagu.pagu_awal.toString() })} className="text-[10px] font-bold text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-200">Edit</button>
                       </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW KAS RUTIN */}
+      {viewMode === "kas" && (
+        <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-5 sm:p-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="mb-6 pb-4 border-b border-gray-100">
+            <h2 className="text-xs font-bold text-orange-600 uppercase tracking-widest mb-1.5">Manajemen Kas</h2>
+            <p className="text-[22px] font-extrabold text-gray-900 leading-tight">Pengaturan Kas Rutin</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Form Tambah / Edit */}
+            {(isBendahara || isKementerian) && (
+            <div>
+              <form onSubmit={handleSubmitKasRutin} className="bg-gray-50/70 p-4 rounded-2xl border border-gray-100 sticky top-4">
+                <h3 className="text-sm font-bold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+                  {isEditKasRutin ? "Edit Kas Rutin" : "Tambah Kas Rutin"}
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Nama Kas</label>
+                    <input type="text" value={formKasRutin.nama} onChange={e => setFormKasRutin({...formKasRutin, nama: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="Contoh: Iuran Mingguan" required />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Nominal (Rp)</label>
+                    <input type="number" value={formKasRutin.nominal} onChange={e => setFormKasRutin({...formKasRutin, nominal: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="50000" required />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Periode</label>
+                    <select value={formKasRutin.periode} onChange={e => setFormKasRutin({...formKasRutin, periode: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+                      <option value="mingguan">Mingguan</option>
+                      <option value="bulanan">Bulanan</option>
+                      <option value="tahunan">Tahunan</option>
+                    </select>
+                  </div>
+                  {formKasRutin.periode === "mingguan" && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Hari (1=Senin, 7=Minggu)</label>
+                      <input type="number" min="1" max="7" value={formKasRutin.hari_mingguan} onChange={e => setFormKasRutin({...formKasRutin, hari_mingguan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                    </div>
+                  )}
+                  {formKasRutin.periode === "bulanan" && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Tanggal (1-31)</label>
+                      <input type="number" min="1" max="31" value={formKasRutin.tanggal_bulanan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_bulanan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                    </div>
+                  )}
+                  {formKasRutin.periode === "tahunan" && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Bulan (1-12)</label>
+                        <input type="number" min="1" max="12" value={formKasRutin.bulan_tahunan} onChange={e => setFormKasRutin({...formKasRutin, bulan_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Tanggal (1-31)</label>
+                        <input type="number" min="1" max="31" value={formKasRutin.tanggal_tahunan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                      </div>
+                    </>
+                  )}
+                  <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm">
+                    {isEditKasRutin ? "Simpan Perubahan" : "Tambah Kas Rutin"}
+                  </button>
+                  {isEditKasRutin && (
+                    <button type="button" onClick={() => { setIsEditKasRutin(false); setEditKasRutinId(null); setFormKasRutin({ nama: "", nominal: "", periode: "bulanan", hari_mingguan: "", tanggal_bulanan: "", bulan_tahunan: "", tanggal_tahunan: "" }); }} className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-xl transition-colors text-sm">
+                      Batal Edit
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+            )}
+
+            {/* Daftar Kas Rutin */}
+            <div className="lg:col-span-2">
+              <h3 className="text-sm font-bold text-gray-800 mb-3 border-b border-gray-200 pb-2">Daftar Aturan Kas Rutin</h3>
+              <div className="space-y-3">
+                {filteredKasRutin.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                    <svg className="w-10 h-10 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <p className="text-sm font-medium text-gray-500">Belum ada aturan kas rutin.</p>
+                  </div>
+                ) : (
+                  filteredKasRutin.map((kas) => (
+                    <div key={kas.id} className="p-4 border border-gray-100 rounded-xl bg-gray-50 flex justify-between items-center shadow-sm">
+                      <div>
+                        <p className="text-sm font-extrabold text-gray-900">{kas.nama}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {formatRupiah(kas.nominal)} / {kas.periode}
+                          {kas.periode === 'mingguan' && ` (Hari ke-${kas.hari_mingguan})`}
+                          {kas.periode === 'bulanan' && ` (Tgl ${kas.tanggal_bulanan})`}
+                          {kas.periode === 'tahunan' && ` (Bulan ${kas.bulan_tahunan} Tgl ${kas.tanggal_tahunan})`}
+                        </p>
+                        <p className="text-[10px] font-bold text-gray-600 bg-gray-200 inline-block px-2 py-0.5 rounded-md uppercase tracking-wider mt-1">
+                          {kas.tingkatan === 'Komunal' ? 'KOMUNAL' : `KEMENTERIAN: ${kas.kementerian}`}
+                        </p>
+                      </div>
+                      {((kas.tingkatan === 'Komunal' && isBendahara) || (kas.tingkatan === 'Kementerian' && kas.kementerian === userRole)) && (
+                      <div className="flex flex-col gap-1.5 flex-shrink-0">
+                        <button onClick={() => handleEditKasRutin(kas)} className="text-[10px] font-bold text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-200">Edit</button>
+                        <button onClick={() => handleDeleteKasRutin(kas.id)} className="text-[10px] font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200">Hapus</button>
+                      </div>
+                      )}
                     </div>
                   ))
                 )}
