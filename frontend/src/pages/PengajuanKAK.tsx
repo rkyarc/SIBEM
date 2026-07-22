@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+interface RevisionData {
+  id: number;
+  kak_id: number;
+  user_id: number;
+  status_sebelumnya: string;
+  status_baru: string;
+  catatan: string | null;
+  created_at: string;
+  user?: { name: string, role: string };
+}
+
 interface KAKData {
   id: number;
   user_id?: number;
@@ -24,6 +35,8 @@ const PengajuanKAK = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedPengajuan, setSelectedPengajuan] = useState<KAKData | null>(null);
+  const [revisions, setRevisions] = useState<RevisionData[]>([]);
+  const [isLoadingRevisions, setIsLoadingRevisions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [activeTab, setActiveTab] = useState<'kak' | 'lpj'>('kak');
@@ -66,6 +79,21 @@ const PengajuanKAK = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const fetchRevisions = async (kakId: number) => {
+    setIsLoadingRevisions(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://127.0.0.1:8000/api/kak/${kakId}/revisions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRevisions(res.data);
+    } catch (error) {
+      console.error("Gagal mengambil riwayat revisi", error);
+    } finally {
+      setIsLoadingRevisions(false);
+    }
+  };
 
   const fetchData = async (silent = false) => {
     if (!silent) setIsFetching(true);
@@ -153,6 +181,7 @@ const PengajuanKAK = () => {
   const handleDetailClick = (item: KAKData) => {
     setSelectedPengajuan(item);
     setIsDetailModalOpen(true);
+    fetchRevisions(item.id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -471,7 +500,7 @@ return matchTab && matchRole;
       {/* MODAL DETAIL KAK/LPJ */}
       {isDetailModalOpen && selectedPengajuan && (
         <div className="fixed inset-0 bg-white/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-[95%] sm:w-full max-w-lg p-5 sm:p-6 relative">
+          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-[95%] sm:w-full max-w-lg p-5 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4 pr-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">
@@ -501,13 +530,52 @@ return matchTab && matchRole;
 
               {selectedPengajuan.catatan_revisi && (
                 <div>
-                  <p className="text-xs text-red-500 font-bold uppercase tracking-wide mb-1">Catatan Revisi dari Sekretaris</p>
+                  <p className="text-xs text-red-500 font-bold uppercase tracking-wide mb-1">Catatan Terakhir</p>
                   <div className="text-sm text-red-700 bg-red-50 p-3 rounded-lg border border-red-100 whitespace-pre-wrap">
                     {selectedPengajuan.catatan_revisi}
                   </div>
                 </div>
               )}
             </div>
+            
+            
+              {/* RIWAYAT REVISI */}
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  Riwayat Revisi & Aktivitas
+                </h3>
+                
+                {isLoadingRevisions ? (
+                  <div className="flex justify-center p-4">
+                    <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : revisions.length > 0 ? (
+                  <div className="space-y-4">
+                    {revisions.map((rev) => (
+                      <div key={rev.id} className="relative pl-4 border-l-2 border-orange-200">
+                        <div className="absolute w-2.5 h-2.5 bg-orange-500 rounded-full -left-[6px] top-1.5 border-2 border-white"></div>
+                        <div className="text-xs text-gray-500 font-medium mb-0.5 flex justify-between">
+                          <span>{rev.user?.name || 'Sistem'} ({rev.user?.role || 'Unknown'})</span>
+                          <span>{new Date(rev.created_at).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800 mb-1">
+                          <span className="text-gray-500 line-through mr-1">{rev.status_sebelumnya.toUpperCase()}</span>
+                          <span className="text-orange-600">➔ {rev.status_baru.toUpperCase()}</span>
+                        </div>
+                        {rev.catatan && (
+                          <div className="text-sm text-gray-700 bg-gray-50 p-2.5 rounded-lg border border-gray-100 mt-1 whitespace-pre-wrap">
+                            {rev.catatan}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Belum ada riwayat aktivitas untuk dokumen ini.</p>
+                )}
+              </div>
+
 
             {/* AKSI KHUSUS SEKRETARIS */}
             {isSekretaris && (

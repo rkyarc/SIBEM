@@ -25,4 +25,9 @@ class Kak extends Model
         'anggaran_estimasi',
         'penanggung_jawab',
     ];
+
+    public function revisions()
+    {
+        return $this->hasMany(KakRevision::class);
+    }
 }
