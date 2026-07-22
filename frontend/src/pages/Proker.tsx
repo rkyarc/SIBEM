@@ -112,9 +112,9 @@ const Proker = () => {
       setIsModalOpen(false);
       // PERUBAHAN 2: Fetch data diam-diam tanpa merubah isFetching jadi true
       fetchProkers(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menyimpan proker:", error);
-      alert("Terjadi kesalahan saat menyimpan data.");
+      alert(error.response?.data?.message || "Terjadi kesalahan saat menyimpan data.");
     } finally {
       setIsLoading(false);
     }

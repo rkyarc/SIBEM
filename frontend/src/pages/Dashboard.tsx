@@ -5,6 +5,7 @@ export default function Dashboard() {
   const [anggaranData, setAnggaranData] = useState<any[]>([]);
   const [prokerData, setProkerData] = useState<any[]>([]);
   const [kakData, setKakData] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [paguDariDB, setPaguDariDB] = useState<number>(0);
   const [isEditingPagu, setIsEditingPagu] = useState(false);
@@ -31,11 +32,12 @@ export default function Dashboard() {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Fetch All API parallel
-        const [anggaranRes, prokerRes, kakRes, paguRes] = await Promise.all([
+        const [anggaranRes, prokerRes, kakRes, paguRes, usersRes] = await Promise.all([
           axios.get('http://127.0.0.1:8000/api/anggaran', { headers }).catch(() => ({ data: [] })),
           axios.get('http://127.0.0.1:8000/api/proker', { headers }).catch(() => ({ data: [] })),
           axios.get('http://127.0.0.1:8000/api/kak', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/pagu', { headers }).catch(() => ({ data: [] }))
+          axios.get('http://127.0.0.1:8000/api/pagu', { headers }).catch(() => ({ data: [] })),
+          axios.get('http://127.0.0.1:8000/api/users', { headers }).catch(() => ({ data: [] }))
         ]);
 
         // Filter based on division if not BPH
@@ -52,6 +54,7 @@ export default function Dashboard() {
         setAnggaranData(filteredAnggaran);
         setProkerData(filteredProker);
         setKakData(filteredKak);
+        setUserData(usersRes.data.data || usersRes.data || []);
         
         const paguTarget = isBPH ? "BEM" : userDivisi;
         const myPagu = paguRes.data.find((p: any) => p.kementerian?.toLowerCase() === paguTarget?.toLowerCase());
@@ -65,18 +68,6 @@ export default function Dashboard() {
 
     fetchData();
   }, [isBPH, userDivisi]);
-
-  // 1. Dynamic Data: Monitoring Pagu Anggaran
-  const totalPengeluaran = anggaranData.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
-
-  const paguTotal = paguDariDB || 0;
-  const paguAnggaran = {
-    total: paguTotal,
-    terpakai: totalPengeluaran,
-    sisa: paguTotal - totalPengeluaran,
-  };
-  const persentasePagu = Math.min((paguAnggaran.terpakai / paguAnggaran.total) * 100, 100);
-  const statusPagu = persentasePagu > 80 ? 'Kritis' : persentasePagu > 50 ? 'Waspada' : 'Aman';
 
   const handleSavePagu = async () => {
     try {
@@ -114,24 +105,126 @@ export default function Dashboard() {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  const uniquePeriode = Array.from(new Set(prokerData.map(p => {
-    if (!p.created_at) return null;
-    return new Date(p.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-  }))).filter(Boolean) as string[];
+  const normalizeText = (value: unknown) => String(value ?? "").toLowerCase();
 
-  const uniqueKementerian = Array.from(new Set(prokerData.map(p => p.divisi))).filter(Boolean) as string[];
+  const getDateValue = (item: any) => item.created_at || item.tanggal || item.tanggal_pelaksanaan || item.updated_at || "";
 
-  const filteredProkers = prokerData.filter(p => {
-    const statusText = formatStatusText(p.status);
-    const periodeText = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) : "";
+  const getPeriodeText = (item: any) => {
+    const dateValue = getDateValue(item);
+    if (!dateValue) return "";
 
-    const matchSearch = !searchQuery || p.nama_proker.toLowerCase().includes(searchQuery.toLowerCase());
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  };
+
+  const getKementerianFromRole = (role: string) => {
+    const roleText = role?.trim() || "";
+    const roleLower = roleText.toLowerCase();
+    const excludedRoles = [
+      "admin",
+      "presiden bem",
+      "wakil presiden bem",
+      "bendahara",
+      "bendahara 1",
+      "bendahara 2",
+      "sekretaris",
+      "sekretaris 1",
+      "sekretaris 2",
+    ];
+
+    if (!roleLower || excludedRoles.includes(roleLower)) return "";
+
+    return roleText.replace(/^(Menteri|Sekjen|Staff|Staf)\s+/i, "").trim();
+  };
+
+  const matchesDashboardFilters = (item: any, searchableFields: unknown[]) => {
+    const statusText = formatStatusText(item.status);
+    const periodeText = getPeriodeText(item);
+    const kementerianText = item.divisi || item.kementerian || "";
+    const haystack = searchableFields.map(normalizeText).join(" ");
+
+    const matchSearch = !searchQuery.trim() || haystack.includes(normalizeText(searchQuery.trim()));
     const matchStatus = statusFilter === 'Semua Status' || statusText === statusFilter;
     const matchPeriode = periodeFilter === 'Semua Periode' || periodeText === periodeFilter;
-    const matchKementerian = kementerianFilter === 'Semua Kementerian' || p.divisi === kementerianFilter;
+    const matchKementerian = kementerianFilter === 'Semua Kementerian' || kementerianText === kementerianFilter;
 
     return matchSearch && matchStatus && matchPeriode && matchKementerian;
+  };
+
+  const dashboardItems = [...prokerData, ...kakData, ...anggaranData];
+
+  const periodeMap = dashboardItems.reduce<Map<string, number>>((map, item) => {
+    const periode = getPeriodeText(item);
+    const dateValue = getDateValue(item);
+    const timestamp = dateValue ? new Date(dateValue).getTime() : 0;
+    if (periode && (!map.has(periode) || timestamp > map.get(periode)!)) {
+      map.set(periode, timestamp);
+    }
+    return map;
+  }, new Map<string, number>());
+
+  const uniquePeriode = Array.from(periodeMap.entries())
+    .sort(([, timeA], [, timeB]) => timeB - timeA)
+    .map(([periode]) => periode);
+
+  const kementerianFromUsers = userData.map(user => getKementerianFromRole(user.role)).filter(Boolean);
+  const kementerianFromItems = dashboardItems.map(item => item.divisi || item.kementerian).filter(Boolean);
+  const uniqueKementerian = Array.from(new Set([...kementerianFromUsers, ...kementerianFromItems])).sort() as string[];
+
+  const uniqueStatus = Array.from(new Set(dashboardItems.map(item => formatStatusText(item.status)).filter(status => status !== "-"))).sort();
+
+  const filteredProkers = prokerData.filter(p => {
+    return matchesDashboardFilters(p, [
+      p.nama_proker,
+      p.divisi,
+      p.deskripsi,
+      formatStatusText(p.status),
+      getPeriodeText(p),
+    ]);
   });
+
+  const filteredKak = kakData.filter(k => {
+    return matchesDashboardFilters(k, [
+      k.nama_kegiatan,
+      k.divisi,
+      k.tipe_pengajuan,
+      k.link_drive,
+      k.catatan_revisi,
+      formatStatusText(k.status),
+      getPeriodeText(k),
+    ]);
+  });
+
+  const filteredAnggaran = anggaranData.filter(a => {
+    return matchesDashboardFilters(a, [
+      a.nama_kegiatan,
+      a.divisi,
+      a.jenis,
+      a.keterangan,
+      a.jumlah,
+      formatStatusText(a.status),
+      getPeriodeText(a),
+    ]);
+  });
+
+  const isFilterActive = Boolean(searchQuery.trim()) ||
+    statusFilter !== 'Semua Status' ||
+    periodeFilter !== 'Semua Periode' ||
+    kementerianFilter !== 'Semua Kementerian';
+
+  // 1. Dynamic Data: Monitoring Pagu Anggaran
+  const totalPengeluaran = filteredAnggaran.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
+
+  const paguTotal = paguDariDB || 0;
+  const paguAnggaran = {
+    total: paguTotal,
+    terpakai: totalPengeluaran,
+    sisa: paguTotal - totalPengeluaran,
+  };
+  const persentasePagu = paguAnggaran.total > 0 ? Math.min((paguAnggaran.terpakai / paguAnggaran.total) * 100, 100) : 0;
+  const statusPagu = persentasePagu > 80 ? 'Kritis' : persentasePagu > 50 ? 'Waspada' : 'Aman';
 
   const formatRupiah = (angka: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(angka);
 
@@ -203,8 +296,8 @@ export default function Dashboard() {
       };
     });
 
-  // 5. Approval Terbaru (Kini dari KAK & LPJ, ambil 3 terbaru)
-  const approvalTerbaru = [...kakData]
+  // 5. Approval Terbaru (Kini dari KAK & LPJ, mengikuti filter dashboard)
+  const approvalTerbaru = [...filteredKak]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 3)
     .map(k => {
@@ -242,7 +335,7 @@ export default function Dashboard() {
           <svg className="w-5 h-5 text-gray-400 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           <input
             type="text"
-            placeholder="Cari kegiatan..."
+            placeholder="Cari kegiatan, KAK/LPJ, anggaran..."
             className="w-full outline-none bg-transparent text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -254,10 +347,9 @@ export default function Dashboard() {
           onChange={(e) => setStatusFilter(e.target.value)}
         >
           <option value="Semua Status">Semua Status</option>
-          <option value="Menunggu Approval">Menunggu Approval</option>
-          <option value="Direvisi">Direvisi</option>
-          <option value="Ditolak">Ditolak</option>
-          <option value="Disetujui">Disetujui</option>
+          {uniqueStatus.map((status) => (
+            <option key={status} value={status}>{status}</option>
+          ))}
         </select>
         <select
           className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
@@ -290,6 +382,9 @@ export default function Dashboard() {
         >
           Hapus Filter
         </button>
+        <p className="w-full text-xs text-gray-400">
+          Menampilkan {filteredProkers.length} kegiatan, {filteredKak.length} KAK/LPJ, dan {filteredAnggaran.length} anggaran sesuai filter.
+        </p>
       </div>
 
       {/* Main Grid */}
@@ -411,7 +506,9 @@ export default function Dashboard() {
                 </table>
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-6">Belum ada pengajuan kegiatan.</p>
+              <p className="text-sm text-gray-400 text-center py-6">
+                {isFilterActive ? "Tidak ada kegiatan yang cocok dengan filter." : "Belum ada pengajuan kegiatan."}
+              </p>
             )}
           </div>
         </div>
@@ -483,7 +580,9 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 text-center">Belum ada proker.</p>
+              <p className="text-xs text-gray-400 text-center">
+                {isFilterActive ? "Tidak ada progres yang cocok dengan filter." : "Belum ada proker."}
+              </p>
             )}
           </div>
 
@@ -507,7 +606,9 @@ export default function Dashboard() {
                   </span>
                 </div>
               )) : (
-                <p className="text-[11px] text-gray-500 font-medium">Belum ada history KAK/LPJ.</p>
+                <p className="text-[11px] text-gray-500 font-medium">
+                  {isFilterActive ? "Tidak ada KAK/LPJ yang cocok dengan filter." : "Belum ada history KAK/LPJ."}
+                </p>
               )}
             </div>
           </div>
