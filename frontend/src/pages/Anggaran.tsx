@@ -27,6 +27,45 @@ interface KasRutinData {
   kementerian: string | null;
 }
 
+const KEMENTERIAN_OPTIONS = [
+  "Advokesma",
+  "Kominfo",
+  "PSDM",
+  "Sosmas",
+  "Ekraf",
+  "Kastrat",
+  "Dagri",
+  "Risil",
+  "Dalam Negeri",
+  "Luar Negeri",
+  "Agama",
+];
+
+const MAX_BUKTI_FILE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_BUKTI_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+
+const getRoleKementerian = (role: string) => {
+  const normalizedRole = role.toLowerCase();
+  return KEMENTERIAN_OPTIONS.find((dept) => normalizedRole.includes(dept.toLowerCase())) || "";
+};
+
+const getApiErrorMessage = (error: any, fallback: string) => {
+  const responseData = error?.response?.data;
+  if (responseData?.message) return responseData.message;
+
+  const errors = responseData?.errors;
+  if (errors && typeof errors === "object") {
+    const firstError = Object.values(errors).flat().find(Boolean);
+    if (firstError) return String(firstError);
+  }
+
+  if (error?.message === "Network Error") {
+    return "Tidak bisa terhubung ke server backend. Pastikan Laravel berjalan di http://127.0.0.1:8000.";
+  }
+
+  return fallback;
+};
+
 const Anggaran = () => {
   const [daftarAnggaran, setDaftarAnggaran] = useState<AnggaranData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -192,9 +231,10 @@ const Anggaran = () => {
   }
 
   const handleAddClick = () => {
+    const defaultDivisi = isKementerian ? getRoleKementerian(userRole) : "";
     setFormData({
       nama_kegiatan: "",
-      divisi: "",
+      divisi: defaultDivisi,
       jenis: "pengeluaran",
       jumlah: "",
       tanggal: "",
@@ -223,6 +263,19 @@ const Anggaran = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (selectedFile) {
+      if (selectedFile.size > MAX_BUKTI_FILE_SIZE) {
+        alert("Ukuran file kuitansi/nota maksimal 5 MB.");
+        return;
+      }
+
+      if (!ALLOWED_BUKTI_FILE_TYPES.includes(selectedFile.type)) {
+        alert("File kuitansi/nota harus berupa JPG, PNG, atau PDF.");
+        return;
+      }
+    }
+
     setIsLoading(true);
 
     try {
@@ -246,19 +299,19 @@ const Anggaran = () => {
         await axios.post(
           `http://127.0.0.1:8000/api/anggaran/${editId}`,
           payload,
-          { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post("http://127.0.0.1:8000/api/anggaran", payload, {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+          headers: { Authorization: `Bearer ${token}` },
         });
       }
 
       setIsModalOpen(false);
       fetchAnggarans(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menyimpan anggaran:", error);
-      alert("Terjadi kesalahan saat menyimpan data.");
+      alert(getApiErrorMessage(error, "Terjadi kesalahan saat menyimpan data."));
     } finally {
       setIsLoading(false);
     }
@@ -597,16 +650,9 @@ const Anggaran = () => {
                       required
                     >
                       <option value="">-- Pilih Kementerian --</option>
-                      <option value="PSDM">PSDM</option>
-                      <option value="Kominfo">Kominfo</option>
-                      <option value="Dalam Negeri">Dalam Negeri</option>
-                      <option value="Luar Negeri">Luar Negeri</option>
-                      <option value="Agama">Agama</option>
-                      <option value="Kastrat">Kastrat</option>
-                      <option value="Advokesma">Advokesma</option>
-                      <option value="Ekraf">Ekraf</option>
-                      <option value="Sosmas">Sosmas</option>
-                      <option value="Risil">Risil</option>
+                      {KEMENTERIAN_OPTIONS.map((dept) => (
+                        <option key={dept} value={dept}>{dept}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -781,7 +827,7 @@ const Anggaran = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Divisi/Kementerian <span className="text-red-500">*</span></label>
                   <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.divisi} onChange={(e) => setFormData({ ...formData, divisi: e.target.value })}>
                     <option value="" disabled>-- Pilih --</option>
-                    {["Advokesma", "Kominfo", "PSDM", "Sosmas", "Ekraf", "Kastrat", "Dalam Negeri", "Luar Negeri", "Agama", "Risil"].map((dept) => (
+                    {KEMENTERIAN_OPTIONS.map((dept) => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
