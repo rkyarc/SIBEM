@@ -232,7 +232,7 @@ const Proker = () => {
             onClick={handleAddClick}
             className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
           >
-            {activeTab === 'Proker' ? '+ Tambah Program Kerja' : '+ Tambah Kepanitiaan'}
+            + Tambah Kegiatan
           </button>
         </div>
       )}

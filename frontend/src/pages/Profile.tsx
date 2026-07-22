@@ -5,9 +5,7 @@ export default function Profile() {
   const user = userStr ? JSON.parse(userStr) : null;
 
   // State untuk mock toggle switches
-  const [emailNotif, setEmailNotif] = useState(true);
-  const [appNotif, setAppNotif] = useState(true);
-  const [pushNotif, setPushNotif] = useState(false);
+
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
 
   useEffect(() => {

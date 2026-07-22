@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function Dashboard() {
@@ -6,6 +6,9 @@ export default function Dashboard() {
   const [prokerData, setProkerData] = useState<any[]>([]);
   const [kakData, setKakData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [paguDariDB, setPaguDariDB] = useState<number>(0);
+  const [isEditingPagu, setIsEditingPagu] = useState(false);
+  const [inputPagu, setInputPagu] = useState("");
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +22,7 @@ export default function Dashboard() {
   const userRole = user?.role || "";
   const userDivisi = userRole.split(' ').slice(1).join(' ');
   const isBPH = ["presiden", "wakil", "bendahara", "sekretaris"].some(keyword => userRole.toLowerCase().includes(keyword));
+  const isPresbem = userRole.toLowerCase().includes("presiden");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,10 +31,11 @@ export default function Dashboard() {
         const headers = { Authorization: `Bearer ${token}` };
 
         // Fetch All API parallel
-        const [anggaranRes, prokerRes, kakRes] = await Promise.all([
+        const [anggaranRes, prokerRes, kakRes, paguRes] = await Promise.all([
           axios.get('http://127.0.0.1:8000/api/anggaran', { headers }).catch(() => ({ data: [] })),
           axios.get('http://127.0.0.1:8000/api/proker', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/kak', { headers }).catch(() => ({ data: [] }))
+          axios.get('http://127.0.0.1:8000/api/kak', { headers }).catch(() => ({ data: [] })),
+          axios.get('http://127.0.0.1:8000/api/pagu', { headers }).catch(() => ({ data: [] }))
         ]);
 
         // Filter based on division if not BPH
@@ -47,6 +52,10 @@ export default function Dashboard() {
         setAnggaranData(filteredAnggaran);
         setProkerData(filteredProker);
         setKakData(filteredKak);
+        
+        const paguTarget = isBPH ? "BEM" : userDivisi;
+        const myPagu = paguRes.data.find((p: any) => p.kementerian?.toLowerCase() === paguTarget?.toLowerCase());
+        setPaguDariDB(myPagu ? Number(myPagu.pagu_awal) : 0);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -58,11 +67,9 @@ export default function Dashboard() {
   }, [isBPH, userDivisi]);
 
   // 1. Dynamic Data: Monitoring Pagu Anggaran
-  const totalPemasukan = anggaranData.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
   const totalPengeluaran = anggaranData.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((sum, curr) => sum + Number(curr.jumlah), 0);
 
-  // Jika pemasukan belum ada, kita asumsikan pagu default 10jt agar simulasi diagram berjalan. Jika ada, gunakan totalPemasukan asli.
-  const paguTotal = totalPemasukan > 0 ? totalPemasukan : (isBPH ? 50000000 : 10000000);
+  const paguTotal = paguDariDB || 0;
   const paguAnggaran = {
     total: paguTotal,
     terpakai: totalPengeluaran,
@@ -70,6 +77,23 @@ export default function Dashboard() {
   };
   const persentasePagu = Math.min((paguAnggaran.terpakai / paguAnggaran.total) * 100, 100);
   const statusPagu = persentasePagu > 80 ? 'Kritis' : persentasePagu > 50 ? 'Waspada' : 'Aman';
+
+  const handleSavePagu = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const kementerianTarget = isBPH ? "BEM" : userDivisi;
+      await axios.post('http://127.0.0.1:8000/api/pagu', {
+        kementerian: kementerianTarget,
+        pagu_awal: Number(inputPagu),
+        tahun_periode: new Date().getFullYear().toString()
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setPaguDariDB(Number(inputPagu));
+      setIsEditingPagu(false);
+    } catch (e) {
+      console.error(e);
+      alert("Gagal menyimpan pagu");
+    }
+  };
   // 3. Dynamic Data: Status KAK & Kegiatan Helpers
   const formatTanggal = (tanggal: string) => {
     if (!tanggal) return "-";
@@ -275,7 +299,20 @@ export default function Dashboard() {
 
           {/* Monitoring Pagu Anggaran */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-50">
-            <h3 className="font-bold text-gray-800 mb-4">Monitoring Pagu Anggaran</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-gray-800">Monitoring Pagu Anggaran</h3>
+              {isPresbem && (
+                isEditingPagu ? (
+                  <div className="flex items-center gap-2">
+                    <input type="number" className="border border-gray-300 px-3 py-1.5 rounded-lg text-sm w-36 focus:outline-none focus:border-blue-500" value={inputPagu} onChange={e => setInputPagu(e.target.value)} placeholder="Nominal Pagu" />
+                    <button onClick={handleSavePagu} className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition">Simpan</button>
+                    <button onClick={() => setIsEditingPagu(false)} className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition">Batal</button>
+                  </div>
+                ) : (
+                  <button onClick={() => { setInputPagu(paguDariDB.toString()); setIsEditingPagu(true); }} className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold transition">Atur Pagu</button>
+                )
+              )}
+            </div>
 
             <div className="flex flex-col md:flex-row gap-6 items-center justify-center py-1">
               {/* Donut Chart */}

@@ -36,9 +36,45 @@ const Anggaran = () => {
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const [viewMode, setViewMode] = useState<"anggaran" | "pagu">("anggaran");
+  const [daftarPagu, setDaftarPagu] = useState<any[]>([]);
+  const [formPagu, setFormPagu] = useState({ kementerian: "", nominal: "" });
+
   useEffect(() => {
     fetchAnggarans();
+    fetchPagu();
   }, []);
+
+  async function fetchPagu() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://127.0.0.1:8000/api/pagu", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDaftarPagu(response.data);
+    } catch (error) {
+      console.error("Gagal mengambil pagu:", error);
+    }
+  }
+
+  const handleSavePagu = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formPagu.kementerian || !formPagu.nominal) return alert("Isi semua field!");
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post("http://127.0.0.1:8000/api/pagu", {
+        kementerian: formPagu.kementerian,
+        pagu_awal: Number(formPagu.nominal),
+        tahun_periode: new Date().getFullYear().toString()
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setFormPagu({ kementerian: "", nominal: "" });
+      fetchPagu();
+      alert("Alokasi pagu berhasil disimpan!");
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menyimpan alokasi pagu");
+    }
+  };
 
   async function fetchAnggarans(silent = false) {
     if (!silent) setIsFetching(true);
@@ -211,18 +247,31 @@ const Anggaran = () => {
   const userRole = localStorage.getItem("role") || "user";
   const isSekjen = userRole === "sekjen";
   const isPresbem = userRole === "presbem";
+  const isBendahara = userRole.toLowerCase().includes("bendahara");
 
   return (
     <div className="space-y-4 relative">
-      <div className="flex justify-end items-center mb-4">
-        <button
-          onClick={handleAddClick}
-          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
-        >
-          + Ajukan Anggaran
-        </button>
+      <div className="flex justify-end items-center mb-4 gap-3">
+        {isBendahara && (
+          <button
+            onClick={() => setViewMode(viewMode === "anggaran" ? "pagu" : "anggaran")}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium w-full sm:w-auto"
+          >
+            {viewMode === "pagu" ? "Kembali ke Anggaran" : "Alokasi Pagu Kementerian"}
+          </button>
+        )}
+        {viewMode === "anggaran" && (
+          <button
+            onClick={handleAddClick}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
+          >
+            + Ajukan Anggaran
+          </button>
+        )}
       </div>
 
+      {viewMode === "anggaran" && (
+        <>
       {/* Ringkasan Anggaran (Pagu Dana) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
@@ -355,6 +404,104 @@ const Anggaran = () => {
           </table>
         </div>
       </div>
+      </>
+      )}
+
+      {viewMode === "pagu" && (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Total Pagu BEM</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {formatRupiah(daftarPagu.find(p => p.kementerian === 'BEM')?.pagu_awal || 0)}
+              </p>
+            </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Total Telah Dialokasikan</h3>
+              <p className="text-2xl font-bold text-orange-500">
+                {formatRupiah(daftarPagu.filter(p => p.kementerian !== 'BEM').reduce((sum, curr) => sum + Number(curr.pagu_awal), 0))}
+              </p>
+            </div>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
+              <h3 className="text-gray-500 text-sm font-medium mb-1">Sisa Belum Dialokasikan</h3>
+              <p className="text-2xl font-bold text-green-600">
+                {formatRupiah(
+                  (daftarPagu.find(p => p.kementerian === 'BEM')?.pagu_awal || 0) -
+                  daftarPagu.filter(p => p.kementerian !== 'BEM').reduce((sum, curr) => sum + Number(curr.pagu_awal), 0)
+                )}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <form onSubmit={handleSavePagu} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 sticky top-4">
+                <h3 className="text-md font-bold mb-4 text-gray-800 border-b border-gray-100 pb-2">Atur Alokasi Pagu</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Kementerian</label>
+                    <select
+                      value={formPagu.kementerian}
+                      onChange={e => setFormPagu({...formPagu, kementerian: e.target.value})}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                      required
+                    >
+                      <option value="">-- Pilih Kementerian --</option>
+                      <option value="PSDM">PSDM</option>
+                      <option value="Kominfo">Kominfo</option>
+                      <option value="Dalam Negeri">Dalam Negeri</option>
+                      <option value="Luar Negeri">Luar Negeri</option>
+                      <option value="Agama">Agama</option>
+                      <option value="Kastrat">Kastrat</option>
+                      <option value="Advokesma">Advokesma</option>
+                      <option value="Ekraf">Ekraf</option>
+                      <option value="Sosmas">Sosmas</option>
+                      <option value="Risil">Risil</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Nominal Pagu (Rp)</label>
+                    <input
+                      type="number"
+                      value={formPagu.nominal}
+                      onChange={e => setFormPagu({...formPagu, nominal: e.target.value})}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                      placeholder="Contoh: 5000000"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">
+                    Simpan Alokasi
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div className="lg:col-span-2">
+              <h3 className="text-md font-bold mb-3 text-gray-800 border-b border-gray-100 pb-2">Daftar Alokasi Kementerian</h3>
+              <div className="space-y-3">
+                {daftarPagu.filter(p => p.kementerian !== 'BEM').length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-8 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                    <p className="text-sm font-medium text-gray-500">Belum ada pagu yang dialokasikan ke kementerian.</p>
+                  </div>
+                ) : (
+                  daftarPagu.filter(p => p.kementerian !== 'BEM').map((pagu) => (
+                    <div key={pagu.id} className="p-4 border border-gray-100 rounded-xl bg-gray-50 flex justify-between items-center shadow-sm">
+                      <div>
+                        <p className="text-sm font-extrabold text-gray-900">{pagu.kementerian}</p>
+                        <p className="text-xs text-gray-500 mt-1">Periode: {pagu.tahun_periode}</p>
+                      </div>
+                      <div className="text-right flex items-center gap-4">
+                        <p className="text-lg font-bold text-indigo-600">{formatRupiah(pagu.pagu_awal)}</p>
+                        <button onClick={() => setFormPagu({ kementerian: pagu.kementerian, nominal: pagu.pagu_awal.toString() })} className="text-[10px] font-bold text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-200">Edit</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL FORM */}
       {isModalOpen && (
