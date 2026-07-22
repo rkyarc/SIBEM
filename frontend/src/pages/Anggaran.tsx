@@ -345,10 +345,10 @@ const Anggaran = () => {
 
   // Role sementara didapatkan dari localStorage
   const userRole = localStorage.getItem("role") || "user";
-  const isSekjen = userRole === "sekjen";
-  const isPresbem = userRole === "presbem";
+  const isSekjen = userRole.toLowerCase().includes("sekretaris");
+  const isPresbem = userRole.toLowerCase().includes("presiden");
   const isBendahara = userRole.toLowerCase().includes("bendahara");
-  const isKementerian = ["Kastrat", "Risil", "Kominfo", "Sosmas", "PSDM"].includes(userRole);
+  const isKementerian = userRole.toLowerCase().includes("menteri");
 
   // Filter kas rutin berdasarkan role
   const getDepartment = (role: string) => {
@@ -376,7 +376,7 @@ const Anggaran = () => {
         {/* Tombol toggle Kas Rutin */}
         <button
           onClick={() => setViewMode(viewMode === "kas" ? "anggaran" : "kas")}
-          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm font-medium w-full sm:w-auto"
+          className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
         >
           {viewMode === "kas" ? (
             <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Kembali ke Anggaran</>
@@ -389,7 +389,7 @@ const Anggaran = () => {
         {isBendahara && viewMode === "anggaran" && (
           <button
             onClick={() => setViewMode("pagu")}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium w-full sm:w-auto"
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
           >
             Alokasi Pagu Kementerian
           </button>
@@ -397,7 +397,7 @@ const Anggaran = () => {
         {viewMode === "pagu" && (
           <button
             onClick={() => setViewMode("anggaran")}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-sm font-medium w-full sm:w-auto"
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
           >
             Kembali ke Anggaran
           </button>
@@ -430,9 +430,12 @@ const Anggaran = () => {
           </p>
         </div>
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-50">
-          <h3 className="text-gray-500 text-sm font-medium mb-1">Menunggu Validasi</h3>
-          <p className="text-2xl font-bold text-yellow-600">
-            {daftarAnggaran.filter(a => a.status === 'pending' || a.status === 'verifikasi_sekjen').length} Pengajuan
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Total Saldo</h3>
+          <p className="text-2xl font-bold text-blue-600">
+            {formatRupiah(
+              daftarAnggaran.filter(a => a.jenis === 'pemasukan' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0) -
+              daftarAnggaran.filter(a => a.jenis === 'pengeluaran' && a.status === 'disetujui').reduce((acc, curr) => acc + parseFloat(String(curr.jumlah)), 0)
+            )}
           </p>
         </div>
       </div>
@@ -482,17 +485,17 @@ const Anggaran = () => {
                     </td>
                     <td className="px-4 py-2 flex justify-center gap-2">
                       {/* Tombol Approval Berjenjang */}
-                      {(isSekjen && anggaran.status === 'pending') && (
+                      {(isBendahara && anggaran.status === 'pending') && (
                         <button
-                          onClick={() => handleStatusChange(anggaran, 'verifikasi_sekjen')}
-                          className="text-white bg-orange-500 hover:bg-orange-600 text-xs font-bold px-2 py-1 rounded-md transition"
-                          title="Verifikasi Tahap 1"
+                          onClick={() => handleStatusChange(anggaran, 'disetujui')}
+                          className="text-white bg-green-500 hover:bg-green-600 text-xs font-bold px-2 py-1 rounded-md transition"
+                          title="Setujui Anggaran"
                         >
-                          Verifikasi
+                          ACC
                         </button>
                       )}
 
-                      {(isPresbem && anggaran.status === 'verifikasi_sekjen') && (
+                      {(isPresbem && anggaran.status === 'menunggu_presiden') && (
                         <button
                           onClick={() => handleStatusChange(anggaran, 'disetujui')}
                           className="text-white bg-green-500 hover:bg-green-600 text-xs font-bold px-2 py-1 rounded-md transition"
@@ -514,8 +517,8 @@ const Anggaran = () => {
                         </a>
                       )}
 
-                      {/* Tolak bisa dilakukan oleh Sekjen (saat pending) atau Presbem (saat verif) */}
-                      {((isSekjen && anggaran.status === 'pending') || (isPresbem && anggaran.status === 'verifikasi_sekjen')) && (
+                      {/* Tolak bisa dilakukan oleh Bendahara (saat pending) atau Presbem (saat menunggu_presiden) */}
+                      {((isBendahara && anggaran.status === 'pending') || (isPresbem && anggaran.status === 'menunggu_presiden')) && (
                         <button
                           onClick={() => handleStatusChange(anggaran, 'ditolak')}
                           className="text-white bg-red-500 hover:bg-red-600 text-xs font-bold px-2 py-1 rounded-md transition"
@@ -524,8 +527,12 @@ const Anggaran = () => {
                         </button>
                       )}
 
-                      <button onClick={() => handleEditClick(anggaran)} className="text-orange-600 hover:text-orange-800 text-sm font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md transition">Edit</button>
-                      <button onClick={() => handleDeleteClick(anggaran.id)} className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition">Hapus</button>
+                      {anggaran.status === 'pending' && (!isBendahara && !isPresbem && !isSekjen) && (
+                        <>
+                          <button onClick={() => handleEditClick(anggaran)} className="text-orange-600 hover:text-orange-800 text-sm font-medium bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md transition">Edit</button>
+                          <button onClick={() => handleDeleteClick(anggaran.id)} className="text-red-600 hover:text-red-800 text-sm font-medium bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition">Hapus</button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -586,7 +593,7 @@ const Anggaran = () => {
                     <select
                       value={formPagu.kementerian}
                       onChange={e => setFormPagu({...formPagu, kementerian: e.target.value})}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-50"
                       required
                     >
                       <option value="">-- Pilih Kementerian --</option>
@@ -608,12 +615,12 @@ const Anggaran = () => {
                       type="number"
                       value={formPagu.nominal}
                       onChange={e => setFormPagu({...formPagu, nominal: e.target.value})}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-50"
                       placeholder="Contoh: 5000000"
                       required
                     />
                   </div>
-                  <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">
+                  <button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-xl transition-colors">
                     Simpan Alokasi
                   </button>
                 </div>
@@ -634,7 +641,7 @@ const Anggaran = () => {
                         <p className="text-xs text-gray-500 mt-1">Periode: {pagu.tahun_periode}</p>
                       </div>
                       <div className="text-right flex items-center gap-4">
-                        <p className="text-lg font-bold text-indigo-600">{formatRupiah(pagu.pagu_awal)}</p>
+                        <p className="text-lg font-bold text-orange-600">{formatRupiah(pagu.pagu_awal)}</p>
                         <button onClick={() => setFormPagu({ kementerian: pagu.kementerian, nominal: pagu.pagu_awal.toString() })} className="text-[10px] font-bold text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-200">Edit</button>
                       </div>
                     </div>
@@ -665,15 +672,15 @@ const Anggaran = () => {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Nama Kas</label>
-                    <input type="text" value={formKasRutin.nama} onChange={e => setFormKasRutin({...formKasRutin, nama: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="Contoh: Iuran Mingguan" required />
+                    <input type="text" value={formKasRutin.nama} onChange={e => setFormKasRutin({...formKasRutin, nama: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" placeholder="Contoh: Iuran Mingguan" required />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Nominal (Rp)</label>
-                    <input type="number" value={formKasRutin.nominal} onChange={e => setFormKasRutin({...formKasRutin, nominal: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="50000" required />
+                    <input type="number" value={formKasRutin.nominal} onChange={e => setFormKasRutin({...formKasRutin, nominal: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" placeholder="50000" required />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Periode</label>
-                    <select value={formKasRutin.periode} onChange={e => setFormKasRutin({...formKasRutin, periode: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+                    <select value={formKasRutin.periode} onChange={e => setFormKasRutin({...formKasRutin, periode: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white">
                       <option value="mingguan">Mingguan</option>
                       <option value="bulanan">Bulanan</option>
                       <option value="tahunan">Tahunan</option>
@@ -682,28 +689,28 @@ const Anggaran = () => {
                   {formKasRutin.periode === "mingguan" && (
                     <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1">Hari (1=Senin, 7=Minggu)</label>
-                      <input type="number" min="1" max="7" value={formKasRutin.hari_mingguan} onChange={e => setFormKasRutin({...formKasRutin, hari_mingguan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                      <input type="number" min="1" max="7" value={formKasRutin.hari_mingguan} onChange={e => setFormKasRutin({...formKasRutin, hari_mingguan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" />
                     </div>
                   )}
                   {formKasRutin.periode === "bulanan" && (
                     <div>
                       <label className="block text-xs font-bold text-gray-700 mb-1">Tanggal (1-31)</label>
-                      <input type="number" min="1" max="31" value={formKasRutin.tanggal_bulanan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_bulanan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                      <input type="number" min="1" max="31" value={formKasRutin.tanggal_bulanan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_bulanan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" />
                     </div>
                   )}
                   {formKasRutin.periode === "tahunan" && (
                     <>
                       <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1">Bulan (1-12)</label>
-                        <input type="number" min="1" max="12" value={formKasRutin.bulan_tahunan} onChange={e => setFormKasRutin({...formKasRutin, bulan_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                        <input type="number" min="1" max="12" value={formKasRutin.bulan_tahunan} onChange={e => setFormKasRutin({...formKasRutin, bulan_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1">Tanggal (1-31)</label>
-                        <input type="number" min="1" max="31" value={formKasRutin.tanggal_tahunan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" />
+                        <input type="number" min="1" max="31" value={formKasRutin.tanggal_tahunan} onChange={e => setFormKasRutin({...formKasRutin, tanggal_tahunan: e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" />
                       </div>
                     </>
                   )}
-                  <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm">
+                  <button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm">
                     {isEditKasRutin ? "Simpan Perubahan" : "Tambah Kas Rutin"}
                   </button>
                   {isEditKasRutin && (
@@ -740,7 +747,7 @@ const Anggaran = () => {
                           {kas.tingkatan === 'Komunal' ? 'KOMUNAL' : `KEMENTERIAN: ${kas.kementerian}`}
                         </p>
                       </div>
-                      {((kas.tingkatan === 'Komunal' && isBendahara) || (kas.tingkatan === 'Kementerian' && kas.kementerian === userRole)) && (
+                      {((kas.tingkatan === 'Komunal' && isBendahara) || (kas.tingkatan === 'Kementerian' && kas.kementerian && getDepartment(kas.kementerian) === userDept)) && (
                       <div className="flex flex-col gap-1.5 flex-shrink-0">
                         <button onClick={() => handleEditKasRutin(kas)} className="text-[10px] font-bold text-orange-600 hover:text-white bg-orange-50 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-colors border border-orange-200">Edit</button>
                         <button onClick={() => handleDeleteKasRutin(kas.id)} className="text-[10px] font-bold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 px-3 py-1.5 rounded-lg transition-colors border border-red-200">Hapus</button>
@@ -774,11 +781,9 @@ const Anggaran = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Divisi/Kementerian <span className="text-red-500">*</span></label>
                   <select required className="w-full p-2 border border-gray-300 rounded-lg" value={formData.divisi} onChange={(e) => setFormData({ ...formData, divisi: e.target.value })}>
                     <option value="" disabled>-- Pilih --</option>
-                    <option value="Kastrat">Kastrat</option>
-                    <option value="Risil">Risil</option>
-                    <option value="Kominfo">Kominfo</option>
-                    <option value="Sosmas">Sosmas</option>
-                    <option value="PSDM">PSDM</option>
+                    {["Advokesma", "Kominfo", "PSDM", "Sosmas", "Ekraf", "Kastrat", "Dalam Negeri", "Luar Negeri", "Agama", "Risil"].map((dept) => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
