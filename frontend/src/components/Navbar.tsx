@@ -67,7 +67,7 @@ export default function Navbar({ activeMenu, onMenuClick, setActiveMenu }: Navba
       const token = localStorage.getItem("token");
       
       // Fetch KAK Revisions
-      const kakResponse = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kak", {
+      const kakResponse = await axios.get("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/kak", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const userRevisions = kakResponse.data.filter((item: NotificationData) => {
@@ -75,7 +75,7 @@ export default function Navbar({ activeMenu, onMenuClick, setActiveMenu }: Navba
       });
 
       // Fetch Kas Rutin Notifications
-      const notifResponse = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/notifications", {
+      const notifResponse = await axios.get("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/notifications", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const userNotifs = notifResponse.data;
@@ -168,7 +168,7 @@ export default function Navbar({ activeMenu, onMenuClick, setActiveMenu }: Navba
                         if ((notif as any).is_notification) {
                           try {
                             const token = localStorage.getItem("token");
-                            await axios.post(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/notifications/${notif.id}/read`, {}, {
+                            await axios.post(`https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/notifications/${notif.id}/read`, {}, {
                               headers: { Authorization: `Bearer ${token}` }
                             });
                           } catch (e) {}

@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/users", {
+      const response = await fetch("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/users", {
         method: "GET",
         headers: {
           "Accept": "application/json",
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
     const payload = { ...formData, role: finalRole };
 
     try {
-      const response = await fetch("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/users", {
+      const response = await fetch("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
