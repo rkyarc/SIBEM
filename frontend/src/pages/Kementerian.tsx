@@ -39,10 +39,10 @@ export default function Kementerian() {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
 
-        const usersRes = await axios.get("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/users", { headers });
+        const usersRes = await axios.get("/api/users", { headers });
         const users: User[] = usersRes.data.data || usersRes.data || [];
 
-        const kegiatanRes = await axios.get("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/proker", { headers }).catch(() => ({ data: [] }));
+        const kegiatanRes = await axios.get("/api/proker", { headers }).catch(() => ({ data: [] }));
         const kegiatan = kegiatanRes.data.data || kegiatanRes.data || [];
 
         const excludedRoles = [

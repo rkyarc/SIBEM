@@ -20,7 +20,7 @@ export default function Login() {
       // Sengaja ditambahkan delay 1 detik agar animasi loading terlihat jelas
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const response = await axios.post("https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app/api/login", {
+      const response = await axios.post("/api/login", {
         email,
         password,
       });
