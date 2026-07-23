@@ -49,7 +49,7 @@ const Proker = () => {
     if (!silent) setIsFetching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/proker", {
+      const response = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDaftarKegiatan(response.data);
@@ -97,14 +97,14 @@ const Proker = () => {
 
       if (isEditMode && editId !== null) {
         await axios.put(
-          `http://127.0.0.1:8000/api/proker/${editId}`,
+          `https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker/${editId}`,
           formData,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
       } else {
-        await axios.post("http://127.0.0.1:8000/api/proker", formData, {
+        await axios.post("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker", formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -133,7 +133,7 @@ const Proker = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://127.0.0.1:8000/api/proker/${kegiatan.id}`, {
+      await axios.put(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker/${kegiatan.id}`, {
         ...kegiatan,
         status: newStatus
       }, {
@@ -176,7 +176,7 @@ const Proker = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://127.0.0.1:8000/api/proker/${targetId}`, {
+      await axios.delete(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker/${targetId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Sukses! Tidak perlu fetchProkers() lagi

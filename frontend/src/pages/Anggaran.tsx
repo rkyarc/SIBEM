@@ -60,7 +60,7 @@ const getApiErrorMessage = (error: any, fallback: string) => {
   }
 
   if (error?.message === "Network Error") {
-    return "Tidak bisa terhubung ke server backend. Pastikan Laravel berjalan di http://127.0.0.1:8000.";
+    return "Tidak bisa terhubung ke server backend. Pastikan Laravel berjalan di https://sibem-a3fflil93-rkyarcs-projects.vercel.app.";
   }
 
   return fallback;
@@ -110,7 +110,7 @@ const Anggaran = () => {
   async function fetchPagu() {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/pagu", {
+      const response = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/pagu", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDaftarPagu(response.data);
@@ -124,7 +124,7 @@ const Anggaran = () => {
     if (!formPagu.kementerian || !formPagu.nominal) return alert("Isi semua field!");
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://127.0.0.1:8000/api/pagu", {
+      await axios.post("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/pagu", {
         kementerian: formPagu.kementerian,
         pagu_awal: Number(formPagu.nominal),
         tahun_periode: new Date().getFullYear().toString()
@@ -142,7 +142,7 @@ const Anggaran = () => {
   async function fetchKasRutin() {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/kas-rutin", {
+      const response = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kas-rutin", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDaftarKasRutin(response.data);
@@ -170,11 +170,11 @@ const Anggaran = () => {
       }
 
       if (isEditKasRutin && editKasRutinId !== null) {
-        await axios.put(`http://127.0.0.1:8000/api/kas-rutin/${editKasRutinId}`, payload, {
+        await axios.put(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kas-rutin/${editKasRutinId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post("http://127.0.0.1:8000/api/kas-rutin", payload, {
+        await axios.post("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kas-rutin", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -206,7 +206,7 @@ const Anggaran = () => {
     if (!confirm("Yakin ingin menghapus aturan kas rutin ini?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://127.0.0.1:8000/api/kas-rutin/${id}`, {
+      await axios.delete(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kas-rutin/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchKasRutin();
@@ -219,7 +219,7 @@ const Anggaran = () => {
     if (!silent) setIsFetching(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/anggaran", {
+      const response = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDaftarAnggaran(response.data);
@@ -297,12 +297,12 @@ const Anggaran = () => {
         // Laravel uses _method for PUT/PATCH with FormData
         payload.append("_method", "PUT");
         await axios.post(
-          `http://127.0.0.1:8000/api/anggaran/${editId}`,
+          `https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran/${editId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post("http://127.0.0.1:8000/api/anggaran", payload, {
+        await axios.post("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -328,7 +328,7 @@ const Anggaran = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://127.0.0.1:8000/api/anggaran/${anggaran.id}`, {
+      await axios.put(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran/${anggaran.id}`, {
         ...anggaran,
         status: newStatus
       }, {
@@ -358,7 +358,7 @@ const Anggaran = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://127.0.0.1:8000/api/anggaran/${targetId}`, {
+      await axios.delete(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran/${targetId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {

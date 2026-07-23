@@ -63,7 +63,7 @@ export default function Presensi() {
   const fetchSesiPresensi = async () => {
     setIsPageLoading(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/sesi-presensi", {
+      const res = await axios.get("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi", {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
       setDaftarSesi(res.data.data || []);
@@ -104,9 +104,9 @@ export default function Presensi() {
       const headers = { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` };
       let response;
       if (modalMode === "create") {
-        response = await axios.post("http://127.0.0.1:8000/api/sesi-presensi", payload, { headers });
+        response = await axios.post("https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi", payload, { headers });
       } else {
-        response = await axios.put(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi?.id}`, payload, { headers });
+        response = await axios.put(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${selectedSesi?.id}`, payload, { headers });
       }
 
       if (response.status === 200 || response.status === 201) {
@@ -125,7 +125,7 @@ export default function Presensi() {
     if (!selectedSesi) return;
     setIsFormLoading(true);
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}`, { headers: { Authorization: `Bearer ${getToken()}` } });
+      await axios.delete(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${selectedSesi.id}`, { headers: { Authorization: `Bearer ${getToken()}` } });
       fetchSesiPresensi();
       setIsDeleteModalOpen(false);
       setSelectedHistorySesi(null);
@@ -149,7 +149,7 @@ export default function Presensi() {
         ...(inputStatus === "Izin" && { bukti_izin: inputLinkIzin })
       };
 
-      const res = await axios.post(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}/hadir`, payload, {
+      const res = await axios.post(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${selectedSesi.id}/hadir`, payload, {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }
       });
 
@@ -172,7 +172,7 @@ export default function Presensi() {
     setMessage("");
 
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/sesi-presensi/${sesi.id}/peserta`, {
+      const res = await axios.get(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${sesi.id}/peserta`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
 
@@ -194,7 +194,7 @@ export default function Presensi() {
     setSelectedHistorySesi(sesi);
     setIsLoadingPeserta(true);
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/sesi-presensi/${sesi.id}/peserta`, {
+      const res = await axios.get(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${sesi.id}/peserta`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       });
 
@@ -219,7 +219,7 @@ export default function Presensi() {
     setStatusHadir(prev => ({ ...prev, [userId]: status }));
 
     try {
-      await axios.post(`http://127.0.0.1:8000/api/sesi-presensi/${selectedSesi.id}/peserta`, {
+      await axios.post(`https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/sesi-presensi/${selectedSesi.id}/peserta`, {
         kehadiran: [{ user_id: userId, status: status }]
       }, {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }

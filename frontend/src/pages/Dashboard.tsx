@@ -33,11 +33,11 @@ export default function Dashboard() {
 
         // Fetch All API parallel
         const [anggaranRes, prokerRes, kakRes, paguRes, usersRes] = await Promise.all([
-          axios.get('http://127.0.0.1:8000/api/anggaran', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/proker', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/kak', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/pagu', { headers }).catch(() => ({ data: [] })),
-          axios.get('http://127.0.0.1:8000/api/users', { headers }).catch(() => ({ data: [] }))
+          axios.get('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/anggaran', { headers }).catch(() => ({ data: [] })),
+          axios.get('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/proker', { headers }).catch(() => ({ data: [] })),
+          axios.get('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/kak', { headers }).catch(() => ({ data: [] })),
+          axios.get('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/pagu', { headers }).catch(() => ({ data: [] })),
+          axios.get('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/users', { headers }).catch(() => ({ data: [] }))
         ]);
 
         // Filter based on division if not BPH
@@ -73,7 +73,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const kementerianTarget = isBPH ? "BEM" : userDivisi;
-      await axios.post('http://127.0.0.1:8000/api/pagu', {
+      await axios.post('https://sibem-a3fflil93-rkyarcs-projects.vercel.app/api/pagu', {
         kementerian: kementerianTarget,
         pagu_awal: Number(inputPagu),
         tahun_periode: new Date().getFullYear().toString()
