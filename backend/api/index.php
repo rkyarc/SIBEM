@@ -1,16 +1,17 @@
 <?php
 
-// Vercel entry point for Laravel
-// Vercel's filesystem is read-only, so we redirect storage to /tmp
+use Illuminate\Http\Request;
 
-// Create necessary directories in /tmp
+define('LARAVEL_START', microtime(true));
+
+// ============================================================
+// VERCEL FIX: Filesystem Vercel bersifat read-only.
+// Kita harus membuat folder storage di /tmp sebelum Laravel boot.
+// ============================================================
 $storagePath = '/tmp/storage';
+
 $dirs = [
-    $storagePath,
-    $storagePath . '/app',
     $storagePath . '/app/public',
-    $storagePath . '/framework',
-    $storagePath . '/framework/cache',
     $storagePath . '/framework/cache/data',
     $storagePath . '/framework/sessions',
     $storagePath . '/framework/views',
@@ -24,13 +25,15 @@ foreach ($dirs as $dir) {
     }
 }
 
-// Set environment variables to use /tmp paths
-$_ENV['APP_STORAGE_PATH'] = $storagePath;
-putenv("APP_STORAGE_PATH=$storagePath");
+// Register the Composer autoloader...
+require __DIR__ . '/../vendor/autoload.php';
 
-// Set view compiled path
-$_ENV['VIEW_COMPILED_PATH'] = $storagePath . '/framework/views';
-putenv("VIEW_COMPILED_PATH=" . $storagePath . '/framework/views');
+// Bootstrap Laravel...
+/** @var \Illuminate\Foundation\Application $app */
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// Bootstrap Laravel
-require __DIR__ . '/../public/index.php';
+// Override storage path to /tmp BEFORE handling the request
+$app->useStoragePath($storagePath);
+
+// Handle the request
+$app->handleRequest(Request::capture());
