@@ -19,21 +19,46 @@ $dirs = [
     '/tmp/bootstrap/cache',
 ];
 
-foreach ($dirs as $dir) {
-    if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
+try {
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
     }
+} catch (\Throwable $e) {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'mkdir failed', 'message' => $e->getMessage()]);
+    exit;
 }
 
-// Register the Composer autoloader...
-require __DIR__ . '/../vendor/autoload.php';
+try {
+    // Register the Composer autoloader...
+    require __DIR__ . '/../vendor/autoload.php';
 
-// Bootstrap Laravel...
-/** @var \Illuminate\Foundation\Application $app */
-$app = require_once __DIR__ . '/../bootstrap/app.php';
+    // Bootstrap Laravel...
+    /** @var \Illuminate\Foundation\Application $app */
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// Override storage path to /tmp BEFORE handling the request
-$app->useStoragePath($storagePath);
+    // Override storage path to /tmp BEFORE handling the request
+    $app->useStoragePath($storagePath);
+    
+    // Override Cache path if method exists
+    if (method_exists($app, 'useBootstrapCachePath')) {
+        $app->useBootstrapCachePath('/tmp/bootstrap/cache');
+    }
 
-// Handle the request
-$app->handleRequest(Request::capture());
+    // Handle the request
+    $app->handleRequest(Request::capture());
+} catch (\Throwable $e) {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => 'Laravel Boot Failed',
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString()
+    ]);
+    exit;
+}
