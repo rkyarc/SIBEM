@@ -67,6 +67,7 @@ try {
         'message' => $e->getMessage(),
         'file' => $e->getFile(),
         'line' => $e->getLine(),
+        'previous' => $e->getPrevious() ? $e->getPrevious()->getMessage() . ' in ' . $e->getPrevious()->getFile() . ':' . $e->getPrevious()->getLine() : null,
         'trace' => $e->getTraceAsString()
     ]);
     exit;
