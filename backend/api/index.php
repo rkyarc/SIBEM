@@ -33,6 +33,12 @@ try {
 }
 
 try {
+    // Set environment variables for cache paths BEFORE booting Laravel
+    putenv('APP_SERVICES_CACHE=/tmp/bootstrap/cache/services.php');
+    putenv('APP_PACKAGES_CACHE=/tmp/bootstrap/cache/packages.php');
+    $_ENV['APP_SERVICES_CACHE'] = '/tmp/bootstrap/cache/services.php';
+    $_ENV['APP_PACKAGES_CACHE'] = '/tmp/bootstrap/cache/packages.php';
+
     // Register the Composer autoloader...
     require __DIR__ . '/../vendor/autoload.php';
 
