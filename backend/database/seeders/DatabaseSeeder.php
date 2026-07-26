@@ -18,17 +18,10 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Admin SIBEM',
+            'name' => 'Administrator',
             'email' => 'admin@sibem.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+            'password' => \Illuminate\Support\Facades\Hash::make(env('ADMIN_PASSWORD')),
             'role' => 'admin',
-        ]);
-
-        User::factory()->create([
-            'name' => 'Presiden BEM',
-            'email' => 'presbem@sibem.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('presbem123'),
-            'role' => 'user',
         ]);
     }
 }
