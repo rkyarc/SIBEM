@@ -15,5 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\CorsMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            // Force JSON response without using the response() helper to bypass ViewServiceProvider
+            return new \Illuminate\Http\JsonResponse([
+                'error' => 'Original Exception',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        });
     })->create();
