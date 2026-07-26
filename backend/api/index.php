@@ -45,10 +45,7 @@ try {
     // Fix Laravel route matching by preventing it from using /api as base URL
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['PHP_SELF'] = '/index.php';
-
-    // Force debug dump
-    echo json_encode(['SERVER' => $_SERVER]);
-    exit;
+    unset($_SERVER['PATH_INFO']);
 
     // Register the Composer autoloader...
     require __DIR__ . '/../vendor/autoload.php';
