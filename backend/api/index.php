@@ -46,6 +46,15 @@ try {
     // Override Cache path if method exists
     if (method_exists($app, 'useBootstrapCachePath')) {
         $app->useBootstrapCachePath('/tmp/bootstrap/cache');
+        
+        // Copy existing cache files so providers are loaded correctly
+        foreach (['packages.php', 'services.php'] as $file) {
+            $source = __DIR__ . '/../bootstrap/cache/' . $file;
+            $dest = '/tmp/bootstrap/cache/' . $file;
+            if (file_exists($source) && !file_exists($dest)) {
+                copy($source, $dest);
+            }
+        }
     }
 
     // Handle the request
