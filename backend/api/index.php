@@ -42,6 +42,10 @@ try {
     $_SERVER['APP_SERVICES_CACHE'] = "{$cachePath}/services.php";
     $_SERVER['APP_PACKAGES_CACHE'] = "{$cachePath}/packages.php";
 
+    // Fix Laravel route matching by preventing it from using /api as base URL
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['PHP_SELF'] = '/index.php';
+
     // Register the Composer autoloader...
     require __DIR__ . '/../vendor/autoload.php';
 
