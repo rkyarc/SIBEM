@@ -46,6 +46,11 @@ try {
     $_SERVER['SCRIPT_NAME'] = '/index.php';
     $_SERVER['PHP_SELF'] = '/index.php';
 
+    if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'debug-server') !== false) {
+        echo json_encode($_SERVER);
+        exit;
+    }
+
     // Register the Composer autoloader...
     require __DIR__ . '/../vendor/autoload.php';
 
