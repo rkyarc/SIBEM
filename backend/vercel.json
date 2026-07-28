@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.php",
+      "use": "vercel-php@0.7.3"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "api/index.php"
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "true",
+    "APP_KEY": "base64:Lw1DkiMdnu1rXL/qewBp4efqaylHHpS93lyb/gK94yk=",
+    "APP_URL": "https://sibem-git-fix-deploy-rkyarcs-projects.vercel.app",
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie",
+    "CACHE_STORE": "array",
+    "DB_CONNECTION": "pgsql",
+    "DB_HOST": "aws-0-ap-southeast-1.pooler.supabase.com",
+    "DB_PORT": "5432",
+    "DB_DATABASE": "postgres",
+    "DB_USERNAME": "postgres.fnjylnydsoxjfqrnhvfg",
+    "DB_PASSWORD": "SiBemUiSI12026"
+  }
+}

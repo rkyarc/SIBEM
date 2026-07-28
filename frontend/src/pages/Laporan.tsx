@@ -95,7 +95,7 @@ export default function Laporan() {
   const fetchLaporan = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://127.0.0.1:8000/api/laporan", {
+      const res = await axios.get("/api/laporan", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDataLaporan(res.data.laporanData || []);

@@ -84,7 +84,7 @@ const PengajuanKAK = () => {
     setIsLoadingRevisions(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://127.0.0.1:8000/api/kak/${kakId}/revisions`, {
+      const res = await axios.get(`/api/kak/${kakId}/revisions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRevisions(res.data);
@@ -102,7 +102,7 @@ const PengajuanKAK = () => {
     try {
       // 1. Fetch Proker secara terpisah agar tidak terblokir jika route KAK belum ada
       try {
-        const prokerResponse = await axios.get("http://127.0.0.1:8000/api/proker", {
+        const prokerResponse = await axios.get("/api/proker", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const approved = prokerResponse.data.filter((p: any) => {
@@ -125,7 +125,7 @@ const PengajuanKAK = () => {
 
       // 2. Fetch Pengajuan KAK
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/kak", {
+        const response = await axios.get("/api/kak", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDaftarPengajuan(response.data);
@@ -198,11 +198,11 @@ const PengajuanKAK = () => {
       };
 
       if (isEditMode && editId !== null) {
-        await axios.put(`http://127.0.0.1:8000/api/kak/${editId}`, payload, {
+        await axios.put(`/api/kak/${editId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post("http://127.0.0.1:8000/api/kak", payload, {
+        await axios.post("/api/kak", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -231,7 +231,7 @@ const PengajuanKAK = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://127.0.0.1:8000/api/kak/${item.id}`, {
+      await axios.put(`/api/kak/${item.id}`, {
         ...item,
         status: revisiData.status_baru,
         catatan_revisi: revisiData.catatan
@@ -251,7 +251,7 @@ const PengajuanKAK = () => {
   const handleStatusChangeFast = async (item: KAKData, newStatus: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://127.0.0.1:8000/api/kak/${item.id}`, {
+      await axios.put(`/api/kak/${item.id}`, {
         ...item,
         status: newStatus
       }, {
@@ -274,7 +274,7 @@ const PengajuanKAK = () => {
     if (deleteTargetId === null) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://127.0.0.1:8000/api/kak/${deleteTargetId}`, {
+      await axios.delete(`/api/kak/${deleteTargetId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setIsDeleteModalOpen(false);

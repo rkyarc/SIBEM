@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users", {
+      const response = await fetch("/api/users", {
         method: "GET",
         headers: {
           "Accept": "application/json",
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
     const payload = { ...formData, role: finalRole };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
