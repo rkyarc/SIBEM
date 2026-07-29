@@ -331,7 +331,7 @@ export default function Dashboard() {
     <div className="space-y-4">
       {/* Filter Responsif */}
       <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-4">
-        <div className="flex-1 min-w-[200px] flex items-center bg-white border border-gray-100 rounded-xl px-4 py-2 shadow-sm">
+        <div className="flex-1 min-w-[200px] flex items-center bg-white border border-gray-100 rounded-xl px-4 py-2.5 shadow-sm">
           <svg className="w-5 h-5 text-gray-400 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           <input
             type="text"
@@ -342,7 +342,7 @@ export default function Dashboard() {
           />
         </div>
         <select
-          className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
+          className="px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -352,7 +352,7 @@ export default function Dashboard() {
           ))}
         </select>
         <select
-          className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
+          className="px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={periodeFilter}
           onChange={(e) => setPeriodeFilter(e.target.value)}
         >
@@ -362,7 +362,7 @@ export default function Dashboard() {
           ))}
         </select>
         <select
-          className="px-4 py-2 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
+          className="px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-gray-500 text-sm shadow-sm"
           value={kementerianFilter}
           onChange={(e) => setKementerianFilter(e.target.value)}
         >
@@ -399,12 +399,12 @@ export default function Dashboard() {
               {isPresbem && (
                 isEditingPagu ? (
                   <div className="flex items-center gap-2">
-                    <input type="number" className="border border-gray-300 px-3 py-1.5 rounded-lg text-sm w-36 focus:outline-none focus:border-blue-500" value={inputPagu} onChange={e => setInputPagu(e.target.value)} placeholder="Nominal Pagu" />
-                    <button onClick={handleSavePagu} className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition">Simpan</button>
+                    <input type="number" className="border border-gray-300 px-3 py-1.5 rounded-lg text-sm w-36 focus:outline-none focus:border-orange-500" value={inputPagu} onChange={e => setInputPagu(e.target.value)} placeholder="Nominal Pagu" />
+                    <button onClick={handleSavePagu} className="bg-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-orange-700 transition">Simpan</button>
                     <button onClick={() => setIsEditingPagu(false)} className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition">Batal</button>
                   </div>
                 ) : (
-                  <button onClick={() => { setInputPagu(paguDariDB.toString()); setIsEditingPagu(true); }} className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold transition">Atur Pagu</button>
+                  <button onClick={() => { setInputPagu(paguDariDB.toString()); setIsEditingPagu(true); }} className="text-orange-600 hover:bg-orange-50 px-3 py-1.5 rounded-lg text-xs font-bold transition">Atur Pagu</button>
                 )
               )}
             </div>
@@ -418,7 +418,7 @@ export default function Dashboard() {
                   {/* Progress Circle */}
                   <circle
                     cx="50" cy="50" r="40" fill="none"
-                    stroke={statusPagu === 'Kritis' ? '#EF4444' : statusPagu === 'Waspada' ? '#FBBF24' : '#3B82F6'}
+                    stroke={statusPagu === 'Kritis' ? '#EF4444' : statusPagu === 'Waspada' ? '#FBBF24' : '#f97316'}
                     strokeWidth="12"
                     strokeDasharray="251.2"
                     strokeDashoffset={251.2 - (persentasePagu / 100) * 251.2}
@@ -427,7 +427,7 @@ export default function Dashboard() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center mt-1">
-                  <span className={`text-2xl font-bold ${statusPagu === 'Kritis' ? 'text-red-500' : 'text-blue-500'}`}>
+                  <span className={`text-2xl font-bold ${statusPagu === 'Kritis' ? 'text-red-500' : 'text-orange-500'}`}>
                     {persentasePagu.toFixed(0)}%
                   </span>
                   <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-1">Terpakai</span>
@@ -438,7 +438,7 @@ export default function Dashboard() {
               <div className="flex-1 space-y-4 w-full">
                 <div className="flex justify-between items-center pb-3 border-b border-gray-50">
                   <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${statusPagu === 'Kritis' ? 'bg-red-500' : 'bg-[#3B82F6]'}`}></div>
+                    <div className={`w-3 h-3 rounded-full ${statusPagu === 'Kritis' ? 'bg-red-500' : 'bg-[#f97316]'}`}></div>
                     <div>
                       <p className="text-[11px] text-gray-400 font-bold uppercase">Sisa Pagu</p>
                       <p className="text-lg font-bold text-gray-700 leading-tight">{formatRupiah(paguAnggaran.sisa)}</p>
@@ -506,7 +506,8 @@ export default function Dashboard() {
                 </table>
               </div>
             ) : (
-              <p className="text-sm text-gray-400 text-center py-6">
+              <p className="text-sm text-gray-500 text-center py-6 flex flex-col items-center gap-2">
+                <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 {isFilterActive ? "Tidak ada kegiatan yang cocok dengan filter." : "Belum ada pengajuan kegiatan."}
               </p>
             )}
@@ -580,7 +581,8 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400 text-center">
+              <p className="text-xs text-gray-500 text-center flex flex-col items-center gap-2 mt-4">
+                <svg className="w-6 h-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
                 {isFilterActive ? "Tidak ada progres yang cocok dengan filter." : "Belum ada proker."}
               </p>
             )}
