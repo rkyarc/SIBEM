@@ -425,45 +425,51 @@ const Anggaran = () => {
 
   return (
     <div className="space-y-4 relative">
-      <div className="flex flex-wrap justify-end items-center mb-4 gap-3">
-        {/* Tombol toggle Kas Rutin */}
-        <button
-          onClick={() => setViewMode(viewMode === "kas" ? "anggaran" : "kas")}
-          className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
-        >
-          {viewMode === "kas" ? (
-            <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Kembali ke Anggaran</>
-          ) : (
-            <><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Pengaturan Kas Rutin</>
+      <div className="flex justify-end items-center mb-6">
+        <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:flex-row sm:w-auto">
+          {/* Tombol toggle Kas Rutin */}
+          <button
+            onClick={() => setViewMode(viewMode === "kas" ? "anggaran" : "kas")}
+            className={
+              viewMode === "kas"
+                ? "inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
+                : "inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
+            }
+          >
+            {viewMode === "kas" ? (
+              <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Kembali</>
+            ) : (
+              <><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Kas Rutin</>
+            )}
+          </button>
+
+          {/* Tombol toggle Pagu (hanya Bendahara) */}
+          {isBendahara && viewMode === "anggaran" && (
+            <button
+              onClick={() => setViewMode("pagu")}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
+            >
+              Alokasi Pagu
+            </button>
           )}
-        </button>
+          {viewMode === "pagu" && (
+            <button
+              onClick={() => setViewMode("anggaran")}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 sm:w-auto"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Kembali
+            </button>
+          )}
 
-        {/* Tombol toggle Pagu (hanya Bendahara) */}
-        {isBendahara && viewMode === "anggaran" && (
-          <button
-            onClick={() => setViewMode("pagu")}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
-          >
-            Alokasi Pagu Kementerian
-          </button>
-        )}
-        {viewMode === "pagu" && (
-          <button
-            onClick={() => setViewMode("anggaran")}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
-          >
-            Kembali ke Anggaran
-          </button>
-        )}
-
-        {viewMode === "anggaran" && (
-          <button
-            onClick={handleAddClick}
-            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium w-full sm:w-auto"
-          >
-            + Ajukan Anggaran
-          </button>
-        )}
+          {viewMode === "anggaran" && (
+            <button
+              onClick={handleAddClick}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-700 sm:w-auto"
+            >
+              + Ajukan Anggaran
+            </button>
+          )}
+        </div>
       </div>
 
       {viewMode === "anggaran" && (

@@ -106,17 +106,6 @@ export default function Laporan() {
     }
   };
 
-  const totalAnggaranNumber = dataLaporan.reduce((acc, curr) => acc + curr.anggaran, 0);
-  const kementerianUnik = new Set(dataLaporan.map(item => item.kementerian)).size;
-  const pengajuanKakCount = dataLaporan.filter(item => item.statusKak !== 'Belum Diajukan').length;
-
-  const ringkasan = {
-    totalKegiatan: dataLaporan.length,
-    pengajuanKak: pengajuanKakCount,
-    totalAnggaran: formatRupiah(totalAnggaranNumber),
-    jumlahKementerian: kementerianUnik,
-  };
-
   // 1. Filter Data
   const filteredData = dataLaporan.filter((item) => {
     // a. Filter Search (Keyword)
@@ -144,6 +133,17 @@ export default function Laporan() {
 
     return keywordMatch && monthMatch && statusMatch;
   });
+
+  const totalAnggaranNumber = filteredData.reduce((acc, curr) => acc + curr.anggaran, 0);
+  const kementerianUnik = new Set(filteredData.map(item => item.kementerian)).size;
+  const pengajuanKakCount = filteredData.filter(item => item.statusKak !== 'Belum Diajukan').length;
+
+  const ringkasan = {
+    totalKegiatan: filteredData.length,
+    pengajuanKak: pengajuanKakCount,
+    totalAnggaran: formatRupiah(totalAnggaranNumber),
+    jumlahKementerian: kementerianUnik,
+  };
 
   // 2. Pagination Logic
   const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
@@ -296,7 +296,7 @@ export default function Laporan() {
       <div className="space-y-4 print:hidden">
         {/* Judul dan tombol aksi */}
         <div className="flex justify-end items-center mb-6">
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:flex-row sm:w-auto">
             <button
               type="button"
               onClick={() => window.print()}

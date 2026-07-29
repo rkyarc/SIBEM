@@ -10,8 +10,12 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    hmr: {
-      clientPort: 5173,
+    proxy: {
+      "/api": {
+        target: "http://nginx:80",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
