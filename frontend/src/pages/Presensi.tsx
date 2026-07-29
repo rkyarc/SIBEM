@@ -59,6 +59,29 @@ export default function Presensi() {
   const currentUserRole = localStorage.getItem("role")?.toLowerCase() || "";
   const bphRoles = ["admin", "presiden bem", "wakil presiden bem", "sekretaris", "sekretaris 1", "sekretaris 2", "bendahara", "bendahara 1", "bendahara 2"];
   const isBPH = bphRoles.includes(currentUserRole);
+  const isMenteri = currentUserRole.includes("menteri");
+
+  const getKementerianFromRole = (role: string) => {
+    const roleText = role?.trim() || "";
+    const roleLower = roleText.toLowerCase();
+    const excludedRoles = [
+      "admin",
+      "presiden bem",
+      "wakil presiden bem",
+      "bendahara",
+      "bendahara 1",
+      "bendahara 2",
+      "sekretaris",
+      "sekretaris 1",
+      "sekretaris 2",
+    ];
+
+    if (!roleLower || excludedRoles.includes(roleLower)) return "";
+
+    return roleText.replace(/^(Menteri|Sekjen|Staff|Staf)\s+/i, "").trim();
+  };
+  const userKementerianRaw = getKementerianFromRole(localStorage.getItem("role") || "");
+  const userKementerian = userKementerianRaw.charAt(0).toUpperCase() + userKementerianRaw.slice(1).toLowerCase();
 
   const fetchSesiPresensi = async () => {
     setIsPageLoading(true);
@@ -237,7 +260,7 @@ export default function Presensi() {
     <div className="font-sans text-gray-800 space-y-4">
 
       {/* ================= HEADER ================= */}
-      {isBPH && (
+      {(isBPH || isMenteri) && (
         <div className="flex justify-end items-center mb-6">
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <button
@@ -255,7 +278,7 @@ export default function Presensi() {
             </button>
 
             {viewMode === "aktif" && !isPageLoading && filteredSesi.length > 0 && (
-              <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
+              <button onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: isMenteri ? "Kementerian" : "Komunal", kementerian: isMenteri ? userKementerian : "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }} className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm text-sm whitespace-nowrap">
                 Buat Presensi
               </button>
             )}
@@ -353,9 +376,9 @@ export default function Presensi() {
                 ? "Saat ini tidak ada sesi presensi yang sedang berlangsung. Sesi presensi baru akan muncul di sini." 
                 : "Data riwayat presensi kegiatan yang sudah selesai atau ditutup akan tampil di sini."}
             </p>
-            {isBPH && viewMode === "aktif" && (
+            {(isBPH || isMenteri) && viewMode === "aktif" && (
               <button 
-                onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: "Komunal", kementerian: "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }}
+                onClick={() => { setModalMode("create"); setMessage(""); setFormData({ nama_kegiatan: "", tingkatan: isMenteri ? "Kementerian" : "Komunal", kementerian: isMenteri ? userKementerian : "", tanggal: "", waktu_mulai: "", batas_waktu: "" }); setIsFormModalOpen(true); }}
                 className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-sm shadow-orange-600/20 transition-all flex items-center gap-2"
               >
                 Buat Presensi
@@ -599,21 +622,22 @@ export default function Presensi() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div><label className="block text-sm font-bold text-gray-700 mb-1.5">Nama Kegiatan</label><div className={inputWrapper}><input type="text" name="nama_kegiatan" value={formData.nama_kegiatan} onChange={handleChange} required className={inputClass} placeholder="Contoh: Rapat Koordinasi" /></div></div>
               <div><label className="block text-sm font-bold text-gray-700 mb-1.5">Tanggal Kegiatan</label><div className={inputWrapper}><input type="date" name="tanggal" value={formData.tanggal} onChange={handleChange} required className={inputClass} /></div></div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1"><label className="block text-sm font-bold text-gray-700 mb-1.5">Waktu Mulai</label><input type="time" name="waktu_mulai" value={formData.waktu_mulai} onChange={handleChange} required className={inputClass} /></div>
-                <div className="flex-1"><label className="block text-sm font-bold text-gray-700 mb-1.5">Batas Akhir</label><input type="time" name="batas_waktu" value={formData.batas_waktu} onChange={handleChange} required className={inputClass} /></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div><label className="block text-sm font-bold text-gray-700 mb-1.5">Waktu Mulai</label><input type="time" name="waktu_mulai" value={formData.waktu_mulai} onChange={handleChange} required className={inputClass} /></div>
+                <div><label className="block text-sm font-bold text-gray-700 mb-1.5">Batas Akhir</label><input type="time" name="batas_waktu" value={formData.batas_waktu} onChange={handleChange} required className={inputClass} /></div>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">Tingkatan</label>
-                <select name="tingkatan" value={formData.tingkatan} onChange={handleChange} required className={selectClass}>
+                <select name="tingkatan" value={formData.tingkatan} onChange={handleChange} required className={`${selectClass} ${isMenteri ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''}`} disabled={isMenteri}>
                   <option value="Komunal">Komunal (Seluruh Anggota)</option><option value="BPH">BPH (Badan Pengurus Harian)</option><option value="Kementerian">Kementerian Spesifik</option>
                 </select>
               </div>
               {formData.tingkatan === "Kementerian" && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <label className="block text-sm font-bold text-gray-700 mb-1.5">Pilih Kementerian</label>
-                  <select name="kementerian" value={formData.kementerian} onChange={handleChange} required className={selectClass}>
+                  <select name="kementerian" value={formData.kementerian} onChange={handleChange} required className={`${selectClass} ${isMenteri ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''}`} disabled={isMenteri}>
                     <option value="" disabled>-- Pilih --</option><option value="Kastrat">Kastrat</option><option value="Risil">Risil</option><option value="Kominfo">Kominfo</option><option value="Sosmas">Sosmas</option><option value="PSDM">PSDM</option><option value="Dagri">Dagri</option><option value="Ekraf">Ekraf</option><option value="Advokesma">Advokesma</option>
+                    {isMenteri && !["Kastrat", "Risil", "Kominfo", "Sosmas", "PSDM", "Dagri", "Ekraf", "Advokesma"].includes(userKementerian) && <option value={userKementerian}>{userKementerian}</option>}
                   </select>
                 </div>
               )}
